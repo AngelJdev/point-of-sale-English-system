@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  // Ajustado para coincidir con el routePrefix de vercel.json /_/backend
+  // Mas el prefijo /api definido en el server.js
+  baseURL: import.meta.env.VITE_API_URL || '/_/backend/api'
 });
 
 // Interceptor para inyectar el token en cada peticion automaticamente
