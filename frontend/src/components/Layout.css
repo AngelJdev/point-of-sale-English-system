@@ -1,0 +1,13 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--secondary-color);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px; /* Ancho del Sidebar */
+  padding: 2rem;
+  height: 100vh;
+  overflow-y: hidden; /* Evita que toda la página haga scroll, los paneles internos lo harán */
+}

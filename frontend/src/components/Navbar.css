@@ -1,0 +1,47 @@
+.navbar {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand h1 {
+  color: var(--text-light);
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.nav-btn:hover, .nav-btn:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: none;
+  border-color: var(--text-light); /* Indicador visual claro en enfoque */
+}
+
+.nav-btn.active {
+  background-color: var(--text-light);
+  color: var(--primary-color);
+}

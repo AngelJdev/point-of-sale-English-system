@@ -1,0 +1,32 @@
+:root {
+  --primary-color: #1e3a8a; /* Azul oscuro fuerte, buen contraste */
+  --secondary-color: #f3f4f6; /* Gris muy claro para fondos */
+  --text-dark: #111827; /* Casi negro para máximo contraste */
+  --text-light: #ffffff; /* Blanco */
+  --accent-color: #dc2626; /* Rojo fuerte para alertas/borrar */
+  --success-color: #166534; /* Verde oscuro para éxito */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  font-size: 18px; /* Fuente base grande por accesibilidad */
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+button, a {
+  cursor: pointer;
+  font-size: 1.1rem; /* Textos grandes en elementos interactivos */
+}

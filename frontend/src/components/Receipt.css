@@ -1,0 +1,163 @@
+/* Estilos ultra optimizados para impresoras térmicas (80mm) */
+
+.receipt-container {
+  display: none; /* Oculto en la vista normal de la web */
+  width: 72mm; /* Dejamos un margen del ancho real de 80mm */
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+  color: #000;
+  background: white;
+  margin: 0 auto;
+  font-size: 12px;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.receipt-container .receipt-header, 
+.receipt-container .receipt-footer {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.receipt-container .store-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.receipt-container .store-desc, 
+.receipt-container .store-rfc {
+  margin: 2px 0;
+  font-size: 11px;
+}
+
+.receipt-container .receipt-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.receipt-container .receipt-date {
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.receipt-container .divider {
+  width: 100%;
+  border-top: 1px dashed #000;
+  margin: 8px 0;
+}
+
+.receipt-container .divider.dotted {
+  border-top: 1px dotted #000;
+}
+
+.receipt-container .receipt-items {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.receipt-container .receipt-items th {
+  border-bottom: 1px dashed #000;
+  padding: 4px 0;
+  font-size: 11px;
+  text-align: left;
+}
+
+.receipt-container .receipt-items td {
+  padding: 6px 0;
+  vertical-align: top;
+  font-size: 11px;
+}
+
+.receipt-container .qty { width: 12%; text-align: center; font-weight: bold; }
+.receipt-container .desc { width: 63%; padding-right: 4px; }
+.receipt-container .amt { width: 25%; text-align: right; font-weight: bold; }
+
+.receipt-container .item-name {
+  display: block;
+  font-weight: bold;
+}
+
+.receipt-container .item-price {
+  display: block;
+  font-size: 9px;
+  color: #333;
+}
+
+.receipt-container .totals {
+  margin: 10px 0;
+  text-align: left;
+}
+
+.receipt-container .total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 3px 0;
+  font-size: 12px;
+}
+
+.receipt-container .grand-total {
+  font-size: 16px;
+  font-weight: 900;
+  margin-top: 5px;
+  border-top: 1px dashed #000;
+  padding-top: 5px;
+}
+
+.receipt-container .pay-method {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.receipt-container .policy {
+  font-size: 10px;
+  margin: 4px 0;
+}
+
+.receipt-container .policy.bold {
+  font-weight: bold;
+}
+
+.receipt-container .greeting {
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.receipt-container .barcode-placeholder {
+  margin-top: 10px;
+  font-size: 18px;
+  letter-spacing: -2px;
+}
+
+/* REGLA MÁGICA DE IMPRESIÓN */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  
+  #printable-receipt {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 2mm 4mm;
+  }
+
+  @page {
+    margin: 0;
+    size: 80mm auto;
+  }
+}
