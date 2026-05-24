@@ -1,14 +1,13 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  // Ajustado para coincidir con el routePrefix de vercel.json /_/backend
-  // Mas el prefijo /api definido en el server.js
-  baseURL: import.meta.env.VITE_API_URL || '/_/backend/api'
+  // Consumiendo de forma estricta la variable de entorno Vite (Development / Production)
+  baseURL: import.meta.env.VITE_API_URL
 });
 
 // Interceptor para inyectar el token en cada peticion automaticamente
 instance.interceptors.request.use((config) => {
-  const userInfo = localStorage.getItem('userInfo');
+  const userInfo = sessionStorage.getItem('userInfo');
   if (userInfo) {
     const { token } = JSON.parse(userInfo);
     config.headers.Authorization = `Bearer ${token}`;

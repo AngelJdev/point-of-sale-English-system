@@ -34,7 +34,7 @@ const Login = () => {
         navigate('/');
       }, 2000);
     } catch (err) {
-      toast.error('Usuario o contraseña incorrectos. Intente de nuevo.');
+      toast.error(typeof err === 'string' ? err : 'Usuario o contraseña incorrectos. Intente de nuevo.');
       setLoading(false);
     }
   };
@@ -42,7 +42,7 @@ const Login = () => {
   return (
     <div className="login-container">
       {isSuccess && (
-        <div className="login-success-overlay">
+        <div className="bubble-overlay bubble-expand" style={{ pointerEvents: 'all' }}>
           <div className="loader-container">
             <PackageSearch size={100} className="floating-logo" />
             <h2>Iniciando sistema...</h2>
@@ -52,6 +52,8 @@ const Login = () => {
           </div>
         </div>
       )}
+      {/* Retract bubble when returning to login screen */}
+      {!isSuccess && <div className="bubble-overlay bubble-retract"></div>}
       <div className="login-card">
         <div className="login-header">
           <PackageSearch size={64} color="var(--primary-color)" />

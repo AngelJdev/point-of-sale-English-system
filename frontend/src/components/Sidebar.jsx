@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, PackageSearch, Users, BarChart3, Settings, ShieldAlert, LogOut, History } from 'lucide-react';
+import { ShoppingCart, PackageSearch, Users, BarChart3, Settings, ShieldAlert, LogOut, History, Wallet, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
@@ -11,13 +11,34 @@ const Sidebar = () => {
   
   const isPrivileged = currentUser?.role === 'admin';
 
+  const [theme, setTheme] = React.useState(document.documentElement.getAttribute('data-theme') || 'light');
+  const [isExiting, setIsExiting] = React.useState(false);
+
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    setIsExiting(true);
+    setTimeout(() => {
+      logout();
+      navigate('/login');
+    }, 800);
   };
 
   return (
-    <aside className="sidebar">
+    <>
+      {isExiting && <div className="bubble-overlay bubble-expand"></div>}
+      <aside className="sidebar">
       <div className="sidebar-brand">
         <h2>Punto de Venta</h2>
       </div>
@@ -29,6 +50,10 @@ const Sidebar = () => {
         <Link to="/inventory" className={`sidebar-btn ${location.pathname === '/inventory' ? 'active' : ''}`}>
           <PackageSearch size={32} />
           <span>Productos</span>
+        </Link>
+        <Link to="/cash" className={`sidebar-btn ${location.pathname === '/cash' ? 'active' : ''}`}>
+          <Wallet size={32} />
+          <span>Caja Chica</span>
         </Link>
         
         {isPrivileged && (
@@ -58,12 +83,17 @@ const Sidebar = () => {
         </button>
       </nav>
       <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <button onClick={toggleTheme} className="sidebar-btn" style={{ width: '100%', marginBottom: '0.5rem' }}>
+          {theme === 'light' ? <Moon size={32} /> : <Sun size={32} />}
+          <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
+        </button>
         <button onClick={handleLogout} className="sidebar-btn" style={{ width: '100%', color: '#fca5a5' }}>
           <LogOut size={32} />
           <span>Salir</span>
         </button>
       </div>
     </aside>
+    </>
   );
 };
 

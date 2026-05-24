@@ -1,5 +1,5 @@
 .sale-detail-content {
-  background-color: white;
+  background-color: var(--card-bg);
   width: 90%;
   max-width: 700px;
   border-radius: 20px;
@@ -62,7 +62,8 @@
 .detail-item .label {
   display: block;
   font-size: 1.1rem;
-  color: #6b7280;
+  color: var(--text-dark);
+  opacity: 0.6;
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
@@ -82,13 +83,14 @@
   gap: 1rem;
   font-size: 1.4rem;
   margin-bottom: 1.5rem;
-  color: #374151;
+  color: var(--text-dark);
+  opacity: 0.9;
 }
 
 .items-table-container {
-  background-color: #f9fafb;
+  background-color: rgba(128, 128, 128, 0.05);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(128, 128, 128, 0.2);
   margin-bottom: 2rem;
 }
 
@@ -101,14 +103,15 @@
   text-align: left;
   padding: 1rem;
   font-size: 1.1rem;
-  color: #6b7280;
-  border-bottom: 1px solid #e5e7eb;
+  color: var(--text-dark);
+  opacity: 0.6;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
 }
 
 .items-table td {
   padding: 1rem;
   font-size: 1.2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
 }
 
 .item-name {
@@ -173,12 +176,13 @@
 }
 
 .reprint-btn {
-  background-color: #374151;
+  background-color: var(--text-dark);
+  opacity: 0.9;
   color: white;
 }
 
 .reprint-btn:hover {
-  background-color: #1f2937;
+  background-color: var(--text-dark);
   transform: translateY(-2px);
 }
 

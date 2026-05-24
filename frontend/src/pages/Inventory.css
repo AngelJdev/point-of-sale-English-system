@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  background-color: white;
+  background-color: var(--card-bg);
   padding: 1.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -43,9 +43,10 @@
 }
 
 .filter-btn {
-  background-color: white;
+  background-color: var(--card-bg);
   border: 2px solid #d1d5db;
-  color: #4b5563;
+  color: var(--text-dark);
+  opacity: 0.8;
   padding: 1.1rem 1.5rem;
   border-radius: 10px;
   font-size: 1.25rem;
@@ -55,18 +56,18 @@
 }
 
 .filter-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
 }
 
 .filter-active {
-  background-color: #fffbeb;
+  background-color: rgba(239, 68, 68, 0.1);
   border-color: #ef4444;
   color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 .table-container {
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   overflow-x: auto;
@@ -81,15 +82,15 @@
 
 .inventory-table th, .inventory-table td {
   padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
   font-size: 1.2rem;
   color: var(--text-dark);
   vertical-align: middle;
 }
 
 .inventory-table th {
-  background-color: #f9fafb;
-  color: #4b5563;
+  background-color: var(--card-bg);
+  color: var(--text-dark);
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -97,23 +98,23 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2px solid #d1d5db;
+  border-bottom: 2px solid rgba(128, 128, 128, 0.3);
 }
 
 .inventory-table tbody tr:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
 }
 
 .thumbnail-container {
   width: 64px;
   height: 64px;
   border-radius: 8px;
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(128, 128, 128, 0.2);
 }
 
 .thumbnail {
@@ -133,7 +134,7 @@
 .font-mono {
   font-family: monospace;
   font-size: 1.3rem;
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
 }
@@ -145,7 +146,8 @@
 
 .font-bold { font-weight: bold; }
 .text-primary { color: var(--primary-color); font-size: 1.4rem; }
-.text-center { text-align: center; padding: 4rem !important; color: #6b7280; }
+.text-center { text-align: center; padding: 4rem !important; color: var(--text-dark);
+  opacity: 0.6; }
 
 /* Lógica visual de Stock */
 .stock-cell {
@@ -159,16 +161,17 @@
 }
 
 .stock-alert {
-  background-color: #fee2e2;
-  color: #b91c1c; /* Rojo fuerte */
-  border: 2px solid #fca5a5;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--accent-color);
+  border: 2px solid var(--accent-color);
   border-radius: 8px;
 }
 
 .edit-btn {
   background-color: transparent;
   border: none;
-  color: #6b7280;
+  color: var(--text-dark);
+  opacity: 0.6;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 6px;
@@ -180,7 +183,7 @@
 }
 
 .edit-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
   color: var(--primary-color);
 }
 
@@ -198,8 +201,8 @@
 }
 
 .delete-action-btn:hover {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--accent-color);
 }
 
 .pagination-controls {
@@ -210,7 +213,7 @@
   margin-top: 2rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }

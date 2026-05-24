@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../config/axios';
 import Swal from 'sweetalert2';
-import { PlusCircle, Package, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlusCircle, Package, Edit, Trash2, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 import ProductFormModal from '../components/ProductFormModal';
 import SearchBar from '../components/SearchBar';
 import './Inventory.css';
@@ -84,8 +84,10 @@ const Inventory = () => {
           <button 
             className={`filter-btn ${showLowStockOnly ? 'filter-active' : ''}`}
             onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
           >
-            🚨 Urgente Resurtir
+            <AlertTriangle size={20} />
+            <span>Urgente Resurtir</span>
           </button>
           <button className="new-product-btn" onClick={() => {
             setProductToEdit(null);

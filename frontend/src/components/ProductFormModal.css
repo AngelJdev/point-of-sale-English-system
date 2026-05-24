@@ -13,7 +13,7 @@
 }
 
 .modal-form-content {
-  background-color: white;
+  background-color: var(--card-bg);
   width: 100%;
   max-width: 800px; /* Ancho cómodo */
   border-radius: 16px;
@@ -126,9 +126,10 @@
 }
 
 .btn-cancelar {
-  background-color: white;
+  background-color: var(--card-bg);
   border: 2px solid #d1d5db;
-  color: #4b5563;
+  color: var(--text-dark);
+  opacity: 0.8;
   font-weight: bold;
   font-size: 1.3rem;
   padding: 1.2rem 2.5rem;
@@ -138,7 +139,7 @@
 }
 
 .btn-cancelar:hover:not(:disabled) {
-  background-color: #f3f4f6;
+  background-color: var(--bg-color);
   color: var(--text-dark);
 }
 
