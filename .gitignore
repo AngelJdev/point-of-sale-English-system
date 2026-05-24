@@ -3,10 +3,14 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
-# Variables de entorno
+# Variables de entorno — NUNCA subir al repositorio
+# El patrón **/.env atrapa cualquier .env en cualquier subcarpeta
 .env
-frontend/.env
-backend/.env
+.env.*
+!.env.example        # excepción: los archivos de ejemplo SÍ se suben (sin credenciales reales)
+**/.env
+**/.env.*
+!**/.env.example
 
 # Build outputs
 dist/
