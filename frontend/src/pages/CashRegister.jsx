@@ -123,9 +123,13 @@ const CashRegister = () => {
     );
   }
 
-  const totalSalidas = activeRegister.salidas_efectivo?.reduce((acc, curr) => acc + curr.monto, 0) || 0;
-  const ingresosVentas = activeRegister.ingresos_ventas || 0;
-  const totalEsperado = activeRegister.total_esperado || (activeRegister.fondo_inicial - totalSalidas);
+  const totalSalidas     = activeRegister.salidas_efectivo?.reduce((acc, curr) => acc + curr.monto, 0) || 0;
+  const ingresosVentas   = activeRegister.ingresos_ventas || 0;
+  // Fórmula: Fondo Inicial + Ventas en Efectivo − Gastos/Salidas
+  // total_esperado viene calculado desde el backend; el fallback cubre el caso
+  // en que la caja se abrió pero aún no tiene ingresos guardados en el modelo.
+  const totalEsperado    = activeRegister.total_esperado
+    ?? (activeRegister.fondo_inicial + ingresosVentas - totalSalidas);
 
   return (
     <div className="cash-container">

@@ -11,9 +11,12 @@ const getCurrentRegister = async (req, res) => {
     }
     
     // Calcular ventas en efectivo desde que se abrió la caja
+    // IMPORTANTE: se excluyen ventas devueltas para que el total esperado
+    // baje correctamente cuando se procesa una devolución.
     const sales = await Sale.find({ 
       fecha: { $gte: activeRegister.fecha },
-      metodo_pago: 'Efectivo'
+      metodo_pago: 'Efectivo',
+      estado: 'completada'          // ← excluye devoluciones
     });
 
     const totalVentasEfectivo = sales.reduce((acc, sale) => acc + sale.total, 0);
@@ -79,13 +82,12 @@ const closeRegister = async (req, res) => {
       return res.status(400).json({ message: 'No hay caja abierta para cerrar' });
     }
 
-    // Calcular totales
-    // 1. Obtener todas las ventas pagadas en Efectivo hoy que correspondan a esta caja (podemos simplemente calcular sumando)
-    // Asumiremos que los ingresos_ventas ya deberían calcularse, pero si no, podemos hacer una agregación.
-    // Como las ventas no guardan referencia a la caja, lo más seguro es sumar las ventas del día desde la apertura de la caja.
+    // Calcular totales al cerrar caja.
+    // Se excluyen ventas devueltas para reflejar el dinero real en caja.
     const sales = await Sale.find({ 
       fecha: { $gte: activeRegister.fecha },
-      metodo_pago: 'Efectivo'
+      metodo_pago: 'Efectivo',
+      estado: 'completada'          // ← excluye devoluciones
     });
 
     const totalVentasEfectivo = sales.reduce((acc, sale) => acc + sale.total, 0);
