@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const { cloudinary } = require('../config/cloudinary');
 
 // @desc    Obtener todos los productos (con búsqueda avanzada multicriterio)
 // @route   GET /api/products
@@ -65,32 +66,72 @@ const getProductById = async (req, res) => {
   }
 };
 
-// @desc    Crear un nuevo producto
+// @desc    Crear un nuevo producto (con imagen opcional en Cloudinary)
 // @route   POST /api/products
-// @access  Public
+// @access  Private
 const createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    // req.file es inyectado por multer+Cloudinary si el frontend envía una imagen.
+    // multer-storage-cloudinary ya subió el archivo; path contiene la secure_url.
+    const imageUrl = req.file ? req.file.path : '';
+
+    const product = new Product({
+      ...req.body,
+      precio_publico: Number(req.body.precio_publico),
+      stock_actual:   Number(req.body.stock_actual),
+      stock_minimo:   Number(req.body.stock_minimo || 0),
+      imageUrl,
+    });
+
     const createdProduct = await product.save();
-    
     res.status(201).json(createdProduct);
   } catch (error) {
+    // Si el error es de clave duplicada (codigo_interno), mensaje claro
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'El código interno ya existe', error: error.message });
+    }
     res.status(500).json({ message: 'Error al crear el producto', error: error.message });
   }
 };
 
-// @desc    Actualizar un producto existente
+// @desc    Actualizar un producto existente (reemplaza imagen si se envía una nueva)
 // @route   PUT /api/products/:id
-// @access  Public
+// @access  Private
 const updateProduct = async (req, res) => {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      {
-        new: true, // Devuelve el documento modificado, no el original
-        runValidators: true // Valida los datos según el esquema de Mongoose
+    const updateData = {
+      ...req.body,
+      precio_publico: Number(req.body.precio_publico),
+      stock_actual:   Number(req.body.stock_actual),
+      stock_minimo:   Number(req.body.stock_minimo || 0),
+    };
+
+    // Si el frontend mandó una nueva imagen, sustituimos la URL
+    if (req.file) {
+      // Eliminar la imagen anterior de Cloudinary para no acumular archivos huérfanos
+      const existing = await Product.findById(req.params.id).select('imageUrl');
+      if (existing?.imageUrl) {
+        // Extraer el public_id de la URL (formato: ...refaccionaria-inventario/<public_id>.<ext>)
+        const parts = existing.imageUrl.split('/');
+        const publicId = `refaccionaria-inventario/${parts[parts.length - 1].split('.')[0]}`;
+        await cloudinary.uploader.destroy(publicId).catch(() => {}); // fallo silencioso
       }
+      updateData.imageUrl = req.file.path;
+    } else if (req.body.removeImage === 'true') {
+      // El usuario quitó la imagen sin subir una nueva → borrar de Cloudinary y limpiar DB
+      const existing = await Product.findById(req.params.id).select('imageUrl');
+      if (existing?.imageUrl) {
+        const parts = existing.imageUrl.split('/');
+        const publicId = `refaccionaria-inventario/${parts[parts.length - 1].split('.')[0]}`;
+        await cloudinary.uploader.destroy(publicId).catch(() => {});
+      }
+      updateData.imageUrl = '';
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
     );
 
     if (!updatedProduct) {

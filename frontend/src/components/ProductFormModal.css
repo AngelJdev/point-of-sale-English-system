@@ -166,3 +166,130 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* ── Spinner del botón guardar ─────────────────────────────────────────── */
+.btn-guardar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Área de upload de imagen ──────────────────────────────────────────── */
+.image-upload-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Botón zona de clic (estado vacío) */
+.image-upload-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 140px;
+  background: rgba(30, 58, 138, 0.04);
+  border: 2px dashed rgba(30, 58, 138, 0.3);
+  border-radius: 12px;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.image-upload-btn:hover {
+  background: rgba(30, 58, 138, 0.08);
+  border-color: var(--primary-color);
+}
+
+.image-upload-btn small {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-dark);
+  opacity: 0.45;
+}
+
+/* Wrapper cuando ya hay preview */
+.image-preview-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+}
+
+.image-preview {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(128, 128, 128, 0.15);
+  display: block;
+}
+
+/* Botón X para eliminar imagen */
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.85);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: #dc2626;
+}
+
+/* Badge "nueva imagen lista" */
+.image-new-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(22, 163, 74, 0.9);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Botón "Cambiar foto" debajo del preview */
+.change-image-btn {
+  background: transparent;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  color: var(--text-dark);
+  opacity: 0.65;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+  transition: opacity 0.2s;
+}
+
+.change-image-btn:hover {
+  opacity: 1;
+}
