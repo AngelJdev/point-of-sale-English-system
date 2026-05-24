@@ -7,6 +7,7 @@ import Reports from './pages/Reports';
 import SalesHistory from './pages/SalesHistory';
 import Users from './pages/Users';
 import Login from './pages/Login';
+import CashRegister from './pages/CashRegister';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -78,6 +79,11 @@ function App() {
             <Route path="/users" element={
               <ProtectedRoute>
                 <Layout><Users /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/cash" element={
+              <ProtectedRoute>
+                <Layout><CashRegister /></Layout>
               </ProtectedRoute>
             } />
           </Routes>

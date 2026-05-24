@@ -20,6 +20,8 @@ const POS = () => {
   const [payMethod, setPayMethod] = useState('Efectivo');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [montoRecibido, setMontoRecibido] = useState(0);
+  const [cambio, setCambio] = useState(0);
   
   const { cart, removeFromCart, updateQuantity, clearCart, subtotal, impuestos, total } = useCart();
 
@@ -42,6 +44,29 @@ const POS = () => {
     const timeoutId = setTimeout(() => fetchProducts(searchTerm, 1), 300);
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
+
+  // Atajos de teclado (F2 para buscar, F4 para cobrar)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) searchInput.focus();
+      }
+      if (e.key === 'F4') {
+        e.preventDefault();
+        // Si hay items en el carrito y no está procesando, dispara el cobro
+        if (cart.length > 0 && !isProcessing && !showSuccessModal) {
+          handleCheckout();
+        } else if (cart.length === 0) {
+          toast.error('El carrito está vacío');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cart, isProcessing, showSuccessModal]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -68,7 +93,99 @@ const POS = () => {
 
     if (!confirmResult.isConfirmed) return;
 
+    let recibido = total;
+    let cambioCalculado = 0;
+
+    if (payMethod === 'Efectivo') {
+      const { value: montoIngresado } = await Swal.fire({
+        title: 'Cobro en Efectivo',
+        width: '400px',
+        backdrop: `rgba(15, 23, 42, 0.85)`,
+        html: `
+          <div style="font-family: inherit;">
+            <div style="font-size: 1.2rem; margin-bottom: 1rem; color: #374151;">
+              Total a Pagar: <b style="font-size: 1.8rem; color: #1f2937;">$${total.toFixed(2)}</b>
+            </div>
+            <div style="margin-bottom: 0.5rem; text-align: left; font-weight: bold; color: #4b5563; padding-left: 5%;">Monto Recibido del Cliente:</div>
+            <input type="number" id="monto-input" class="swal2-input" min="${total}" step="0.01" style="margin: 0 auto; width: 90%; font-size: 1.5rem; text-align: center; box-sizing: border-box;" placeholder="Ej. 500">
+            <div style="margin: 1.5rem auto 0 auto; width: 90%; padding: 1rem; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+              <div style="font-size: 1rem; color: #6b7280; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">Su Cambio a Entregar</div>
+              <div id="cambio-display" style="font-size: 2.5rem; font-weight: 900; color: #16a34a; letter-spacing: -0.02em;">$0.00</div>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Completar Venta',
+        cancelButtonText: 'Cancelar',
+        didOpen: () => {
+          const input = Swal.getPopup().querySelector('#monto-input');
+          const display = Swal.getPopup().querySelector('#cambio-display');
+          input.focus();
+          
+          input.addEventListener('input', () => {
+            const ingresado = parseFloat(input.value) || 0;
+            const cambioCalc = ingresado - total;
+            
+            if (cambioCalc >= 0) {
+              display.textContent = '$' + cambioCalc.toFixed(2);
+              display.style.color = '#16a34a';
+              display.style.fontSize = '2.5rem';
+            } else {
+              display.textContent = 'Insuficiente';
+              display.style.color = '#dc2626';
+              display.style.fontSize = '1.8rem';
+            }
+          });
+        },
+        preConfirm: () => {
+          const input = Swal.getPopup().querySelector('#monto-input').value;
+          const recibido = parseFloat(input);
+          if (!input || isNaN(recibido)) {
+            Swal.showValidationMessage('Ingrese el monto recibido por el cliente');
+            return false;
+          }
+          if (recibido < total) {
+            Swal.showValidationMessage('El monto recibido no puede ser menor al total');
+            return false;
+          }
+          return recibido;
+        }
+      });
+
+      if (!montoIngresado) return;
+      recibido = parseFloat(montoIngresado);
+      cambioCalculado = recibido - total;
+    }
+
+    if (payMethod === 'Tarjeta') {
+      const termResult = await Swal.fire({
+        title: 'Terminal Bancaria',
+        width: '400px',
+        backdrop: `rgba(15, 23, 42, 0.85)`,
+        html: `
+          <div style="margin: 1.5rem 0; font-family: inherit;">
+            <div class="terminal-loader" style="margin: 0 auto 1.5rem auto;"></div>
+            <p style="font-size: 1.1rem; color: #4b5563; line-height: 1.5;">Deslice o inserte la tarjeta en la terminal física por la cantidad de:</p>
+            <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 12px; border: 1px solid #e5e7eb;">
+              <p style="font-size: 2.5rem; font-weight: 900; color: #1f2937; margin: 0;">$${total.toFixed(2)}</p>
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '✓ Cobro Exitoso (Continuar)',
+        cancelButtonText: 'Cancelar Venta',
+        allowOutsideClick: false
+      });
+      if (!termResult.isConfirmed) return;
+    }
+
     setIsProcessing(true);
+    setMontoRecibido(recibido);
+    setCambio(cambioCalculado);
     
     try {
       const saleData = {
@@ -116,6 +233,8 @@ const POS = () => {
         impuestos={impuestos}
         cart={cart}
         payMethod={payMethod}
+        montoRecibido={montoRecibido}
+        cambio={cambio}
         onNewTicket={handleNewTicket} 
       />
 
@@ -123,7 +242,10 @@ const POS = () => {
       <div className="pos-cart-panel">
         <div className="panel-header">
           <h2 className="panel-title">Venta Actual</h2>
-          <span className="cart-count">{cart.length} ítems</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#9ca3af', fontWeight: 'bold' }}>[F2] Buscar | [F4] Cobrar</span>
+            <span className="cart-count">{cart.length} ítems</span>
+          </div>
         </div>
         
         <div className="cart-items-container">

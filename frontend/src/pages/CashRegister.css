@@ -1,0 +1,209 @@
+.cash-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-box {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 3rem;
+  color: var(--text-dark);
+  opacity: 0.6;
+}
+
+.closed-register-box {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  max-width: 500px;
+  margin: 10vh auto;
+}
+
+.closed-icon {
+  color: #9ca3af;
+  margin-bottom: 1.5rem;
+}
+
+.closed-register-box h2 {
+  font-size: 2rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.closed-register-box p {
+  color: var(--text-dark);
+  opacity: 0.6;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.btn-open-register {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-open-register:hover {
+  background-color: #1e40af;
+  transform: translateY(-2px);
+}
+
+.cash-header {
+  margin-bottom: 2rem;
+}
+
+.cash-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-dark);
+}
+
+.cash-header p {
+  color: var(--text-dark);
+  opacity: 0.6;
+  font-size: 1.1rem;
+}
+
+.cash-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cash-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.card-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.card-icon.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.card-icon.green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+
+.card-info h3 {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  opacity: 0.6;
+  margin-bottom: 0.25rem;
+}
+
+.card-info p {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+/* Subtexto que muestra la fórmula: Fondo + Ventas − Gastos */
+.cash-formula {
+  display: block;
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--text-dark);
+  opacity: 0.45;
+  margin-top: 0.3rem;
+  letter-spacing: 0.03em;
+}
+
+.cash-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-expense {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-expense:hover { background-color: #d97706; }
+
+.btn-close {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.btn-close:hover { background-color: #dc2626; }
+
+.expenses-list {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.expenses-list h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+.expenses-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.expenses-list th {
+  text-align: left;
+  padding: 1rem;
+  background-color: rgba(128, 128, 128, 0.05);
+  color: var(--text-dark);
+  opacity: 0.9;
+  border-bottom: 2px solid rgba(128, 128, 128, 0.2);
+}
+
+.expenses-list td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+  color: var(--text-dark);
+  opacity: 0.9;
+}
+
+.no-expenses {
+  color: #9ca3af;
+  font-style: italic;
+  padding: 2rem 0;
+  text-align: center;
+}

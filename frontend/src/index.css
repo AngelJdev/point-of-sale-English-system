@@ -1,10 +1,25 @@
 :root {
-  --primary-color: #1e3a8a; /* Azul oscuro fuerte, buen contraste */
-  --secondary-color: #f3f4f6; /* Gris muy claro para fondos */
-  --text-dark: #111827; /* Casi negro para máximo contraste */
-  --text-light: #ffffff; /* Blanco */
-  --accent-color: #dc2626; /* Rojo fuerte para alertas/borrar */
-  --success-color: #166534; /* Verde oscuro para éxito */
+  --primary-color: #1e3a8a;
+  --secondary-color: #f3f4f6;
+  --sidebar-bg: #1e3a8a;
+  --text-dark: #111827;
+  --text-light: #ffffff;
+  --accent-color: #dc2626;
+  --success-color: #166534;
+  --bg-color: var(--secondary-color);
+  --card-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+  --primary-color: #3b82f6; 
+  --secondary-color: #0f172a; 
+  --sidebar-bg: #0f172a;
+  --text-dark: #f8fafc; 
+  --text-light: #ffffff; 
+  --accent-color: #ef4444; 
+  --success-color: #22c55e; 
+  --bg-color: #020617;
+  --card-bg: #1e293b;
 }
 
 * {
@@ -15,10 +30,47 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--secondary-color);
+  background-color: var(--bg-color);
   color: var(--text-dark);
-  font-size: 18px; /* Fuente base grande por accesibilidad */
+  font-size: 18px; 
   line-height: 1.5;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Animaciones de Burbuja */
+.bubble-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--primary-color);
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.bubble-expand {
+  clip-path: circle(0% at 50% 50%);
+  animation: clipExpand 0.8s cubic-bezier(0.64, 0, 0.78, 0) forwards;
+}
+
+.bubble-retract {
+  clip-path: circle(150% at 50% 50%);
+  animation: clipRetract 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes clipExpand {
+  0% { clip-path: circle(0% at 50% 50%); }
+  100% { clip-path: circle(150% at 50% 50%); }
+}
+
+@keyframes clipRetract {
+  0% { clip-path: circle(150% at 50% 50%); }
+  100% { clip-path: circle(0% at 50% 50%); display: none; }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -30,3 +82,14 @@ button, a {
   cursor: pointer;
   font-size: 1.1rem; /* Textos grandes en elementos interactivos */
 }
+
+/* Global input and select styles for theme adaptation */
+input, select, textarea {
+  color: var(--text-dark);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-dark);
+  opacity: 0.5;
+}
+

@@ -10,8 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Revisar si hay un usuario guardado en el localStorage al cargar la app
-    const userInfo = localStorage.getItem('userInfo');
+    // Revisar si hay un usuario guardado en el sessionStorage al cargar la app
+    const userInfo = sessionStorage.getItem('userInfo');
     if (userInfo) {
       const parsedInfo = JSON.parse(userInfo);
       setCurrentUser(parsedInfo);
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.post('/users/login', { usuario, password });
       setCurrentUser(data);
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      sessionStorage.setItem('userInfo', JSON.stringify(data));
       return data;
     } catch (error) {
       throw error.response?.data?.message || 'Error al iniciar sesión';
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('userInfo');
+    sessionStorage.removeItem('userInfo');
   };
 
   return (

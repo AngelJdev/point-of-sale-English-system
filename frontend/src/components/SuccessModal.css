@@ -13,44 +13,150 @@
 }
 
 .modal-content {
-  background-color: white;
-  padding: 4rem 3rem;
-  border-radius: 24px;
+  background: var(--card-bg);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(22, 163, 74, 0.2);
   animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  max-width: 600px;
+  max-width: 500px;
   width: 90%;
-  border: 4px solid var(--success-color);
+  border: 1px solid rgba(128, 128, 128, 0.1);
 }
 
 @keyframes modalPopIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .success-icon {
-  color: var(--success-color);
-  margin-bottom: 1.5rem;
-  filter: drop-shadow(0 4px 6px rgba(22, 101, 52, 0.2));
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 6px rgba(22, 163, 74, 0.3));
 }
 
 .success-title {
-  font-size: 2.5rem;
-  color: var(--success-color);
-  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  color: #16a34a;
+  margin-bottom: 1.5rem;
   font-weight: 900;
   letter-spacing: -0.5px;
 }
 
-.success-amount {
+.success-summary {
+  width: 100%;
+  background-color: rgba(128, 128, 128, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(128, 128, 128, 0.15);
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.summary-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 2px dashed rgba(128, 128, 128, 0.2);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+
+.summary-amount span:first-child {
+  font-size: 1rem;
+  color: var(--text-dark);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.amount-value {
   font-size: 3.5rem;
   color: var(--text-dark);
   font-weight: 900;
-  margin-bottom: 3rem;
+  line-height: 1;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.detail-bold {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.change-row {
+  margin-top: 0.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.change-value {
+  color: #16a34a;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* ── Indicador de estado automático (caja + ticket) ───────────────────── */
+.auto-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.auto-status--running {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.auto-status--done {
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  color: #4ade80;
+}
+
+.auto-status--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.status-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .modal-actions-horizontal {
@@ -84,19 +190,20 @@
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
-  background-color: #374151;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--text-dark);
   font-size: 1.4rem;
   font-weight: 900;
   padding: 1.5rem 2rem;
-  border: none;
+  border: 2px solid rgba(128, 128, 128, 0.3);
   border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
 .print-btn:hover {
-  background-color: #1f2937;
+  background-color: var(--card-bg);
+  border-color: var(--primary-color);
   transform: translateY(-4px);
 }

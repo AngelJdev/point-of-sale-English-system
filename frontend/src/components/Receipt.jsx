@@ -1,7 +1,7 @@
 import React from 'react';
 import './Receipt.css';
 
-const Receipt = ({ cart = [], payMethod = '', subtotal = 0, impuestos = 0, total = 0, date = new Date() }) => {
+const Receipt = ({ cart = [], payMethod = '', subtotal = 0, impuestos = 0, total = 0, montoRecibido = 0, cambio = 0, date = new Date() }) => {
   return (
     <div id="printable-receipt" className="receipt-container">
       <div className="receipt-header">
@@ -48,6 +48,12 @@ const Receipt = ({ cart = [], payMethod = '', subtotal = 0, impuestos = 0, total
         <div className="pay-method">
           <span>PAGO EN:</span> <span>{payMethod.toUpperCase()}</span>
         </div>
+        {payMethod === 'Efectivo' && (
+          <>
+            <div className="total-row"><span>SU PAGO:</span> <span>${montoRecibido.toFixed(2)}</span></div>
+            <div className="total-row"><span>CAMBIO:</span> <span>${cambio.toFixed(2)}</span></div>
+          </>
+        )}
         <div className="divider dotted"></div>
         <p className="policy">Revise sus piezas al momento de la entrega.</p>
         <p className="policy bold">No hay devoluciones en partes eléctricas.</p>
