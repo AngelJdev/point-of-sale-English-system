@@ -13,18 +13,28 @@ import {
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
+  Dimensions,
 } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ⚠️ CONFIGURACIÓN DE BACKEND
+// ⚠️ CONFIGURACIÓN DE BACKEND DINÁMICA
 // ─────────────────────────────────────────────────────────────────────────────
-const HOST_IP = '192.168.1.79'; // Cambia esto si tu IP cambia
-const BACKEND_URL = `http://${HOST_IP}:5000/api/products`;
-const LOGIN_URL = `http://${HOST_IP}:5000/api/users/login`;
-const DATA_EXTRACT_URL = `http://${HOST_IP}:5000/api/products/extract-data`;
+let HOST_IP = '192.168.1.79'; 
+let BACKEND_URL = `http://${HOST_IP}:5000/api/products`;
+let LOGIN_URL = `http://${HOST_IP}:5000/api/users/login`;
+let DATA_EXTRACT_URL = `http://${HOST_IP}:5000/api/products/extract-data`;
+
+export const updateHostIP = (newIP) => {
+  HOST_IP = newIP;
+  BACKEND_URL = `http://${HOST_IP}:5000/api/products`;
+  LOGIN_URL = `http://${HOST_IP}:5000/api/users/login`;
+  DATA_EXTRACT_URL = `http://${HOST_IP}:5000/api/products/extract-data`;
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const getMimeType = (uri = '') => {
@@ -43,6 +53,9 @@ const LoginScreen = ({ onLoginSuccess }) => {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [showConfig, setShowConfig] = useState(false);
+  const [tempIP, setTempIP] = useState(HOST_IP);
 
   const handleLogin = async () => {
     if (!usuario || !password) {
@@ -71,40 +84,76 @@ const LoginScreen = ({ onLoginSuccess }) => {
     } catch (error) {
       Alert.alert(
         'Error al iniciar sesión', 
-        error.message.includes('Network') ? 'No se pudo conectar al servidor. Verifica la IP.' : error.message
+        error.message.includes('Network') ? `No se pudo conectar al servidor.\nVerifica que la PC (${HOST_IP}) esté encendida.` : error.message
       );
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSaveIP = async () => {
+    if (!tempIP.trim()) return;
+    updateHostIP(tempIP.trim());
+    await AsyncStorage.setItem('savedIP', tempIP.trim());
+    setShowConfig(false);
+    Alert.alert('Éxito', `IP del servidor actualizada a:\n${tempIP}`);
+  };
+
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: '#0f172a', justifyContent: 'center' }]}>
+      {/* Botón de Configuración en la esquina */}
+      <TouchableOpacity 
+        style={{ position: 'absolute', top: 50, right: 20, padding: 10 }}
+        onPress={() => setShowConfig(!showConfig)}
+      >
+        <Ionicons name="settings-outline" size={28} color="#64748b" />
+      </TouchableOpacity>
+
       <View style={styles.loginCard}>
-        <Ionicons name="person-circle-outline" size={80} color={ACCENT} style={{ alignSelf: 'center', marginBottom: 10 }} />
+        <Ionicons name="cube-outline" size={80} color={ACCENT} style={{ alignSelf: 'center', marginBottom: 10 }} />
         <Text style={styles.loginTitle}>Punto de Venta</Text>
         <Text style={styles.loginSubtitle}>App Compañera</Text>
         
-        <TextInput 
-          style={styles.input} 
-          placeholder="Usuario" 
-          placeholderTextColor="#64748b"
-          autoCapitalize="none"
-          value={usuario}
-          onChangeText={setUsuario}
-        />
-        <TextInput 
-          style={styles.input} 
-          placeholder="Contraseña" 
-          placeholderTextColor="#64748b"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        
-        <TouchableOpacity style={styles.btnLogin} onPress={handleLogin} disabled={isLoading}>
-          {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnLoginText}>Entrar</Text>}
-        </TouchableOpacity>
+        {showConfig ? (
+          <View style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: 15, borderRadius: 10, marginBottom: 15 }}>
+            <Text style={{ color: '#fff', marginBottom: 10, fontWeight: 'bold' }}>Configurar Servidor Local</Text>
+            <Text style={{ color: '#94a3b8', fontSize: 12, marginBottom: 10 }}>Ingresa la dirección IPv4 de la PC de Producción:</Text>
+            <TextInput 
+              style={styles.input} 
+              placeholder="Ej. 192.168.1.100" 
+              placeholderTextColor="#64748b"
+              keyboardType="numeric"
+              value={tempIP}
+              onChangeText={setTempIP}
+            />
+            <TouchableOpacity style={[styles.btnLogin, { backgroundColor: SUCCESS }]} onPress={handleSaveIP}>
+              <Text style={styles.btnLoginText}>Guardar IP</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <TextInput 
+              style={styles.input} 
+              placeholder="Usuario" 
+              placeholderTextColor="#64748b"
+              autoCapitalize="none"
+              value={usuario}
+              onChangeText={setUsuario}
+            />
+            <TextInput 
+              style={styles.input} 
+              placeholder="Contraseña" 
+              placeholderTextColor="#64748b"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            
+            <TouchableOpacity style={styles.btnLogin} onPress={handleLogin} disabled={isLoading}>
+              {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnLoginText}>Entrar</Text>}
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -299,7 +348,11 @@ const FormScreen = ({ photo, initialData, onRetry, onUpload, isUploading }) => {
         <View style={{ width: 24 }} />
       </View>
 
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView 
+        style={styles.flex} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      >
         <ScrollView style={styles.flex} contentContainerStyle={styles.formContent}>
           {/* Foto miniatura */}
           <View style={styles.formImageContainer}>
@@ -382,9 +435,9 @@ const FormScreen = ({ photo, initialData, onRetry, onUpload, isUploading }) => {
 const MultiPreviewScreen = ({ photos, onRetry, onUpload, isUploading }) => {
   return (
     <View style={styles.flex}>
-      <ScrollView horizontal pagingEnabled style={styles.flex}>
+      <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={styles.flex}>
         {photos.map((p, idx) => (
-          <View key={idx} style={styles.multiPreviewContainer}>
+          <View key={idx} style={[styles.multiPreviewContainer, { width: SCREEN_WIDTH }]}>
             <Image source={{ uri: p.uri }} style={styles.previewImage} resizeMode="cover" />
             <View style={styles.photoIndexBadge}>
               <Text style={styles.photoIndexText}>{idx + 1} / {photos.length}</Text>
@@ -435,6 +488,11 @@ export default function App() {
 
   const checkToken = async () => {
     try {
+      const savedIP = await AsyncStorage.getItem('savedIP');
+      if (savedIP) {
+        updateHostIP(savedIP);
+      }
+      
       const token = await AsyncStorage.getItem('userToken');
       setScreen(token ? 'HOME' : 'LOGIN');
     } catch (e) {
@@ -703,7 +761,7 @@ const styles = StyleSheet.create({
 
   // Preview MULTI
   previewImage: { ...StyleSheet.absoluteFillObject, width: '100%' },
-  multiPreviewContainer: { width: 400 },
+  multiPreviewContainer: { flex: 1, backgroundColor: '#000' },
   photoIndexBadge: {
     position: 'absolute', top: 50, right: 20,
     backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12

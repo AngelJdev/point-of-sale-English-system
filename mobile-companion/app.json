@@ -14,17 +14,23 @@
     "ios": {
       "supportsTablet": false,
       "infoPlist": {
-        "NSCameraUsageDescription": "Esta app necesita acceso a la cámara para fotografiar refacciones y agregarlas al inventario del sistema."
-      }
+        "NSCameraUsageDescription": "Esta app necesita acceso a la cámara para fotografiar refacciones y agregarlas al inventario del sistema.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.reffrey.mobilecompanion"
     },
     "android": {
-      "permissions": ["android.permission.CAMERA"],
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#0f172a",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.reffrey.mobilecompanion"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +42,11 @@
           "cameraPermission": "Necesitamos acceso a la cámara para fotografiar refacciones del inventario."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4bba6bc8-1d7f-4bb9-b3c9-fd7fcbb92533"
+      }
+    }
   }
 }

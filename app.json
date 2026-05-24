@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "c0b7fff7-e479-48e2-a9fe-0aa99c958ba3"
+      }
+    },
+    "android": {
+      "package": "com.reffrey.punto_venta"
+    }
+  }
+}
