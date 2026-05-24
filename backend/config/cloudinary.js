@@ -35,10 +35,11 @@ const storage = new CloudinaryStorage({
 });
 
 // ── 3. Middleware de Multer listo para usar en las rutas ───────────────────
-//    Límite de 5 MB por imagen
+// ── 3. Middleware de Multer listo para usar en las rutas ───────────────────
+//    Límite de 10 MB por imagen (los celulares modernos sacan fotos pesadas)
 const uploadImage = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);

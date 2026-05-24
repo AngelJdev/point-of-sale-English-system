@@ -6,6 +6,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  extractData
 } = require('../controllers/productController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -19,6 +20,10 @@ const { uploadImage } = require('../config/cloudinary');
 router.route('/')
   .get(getProducts)
   .post(uploadImage.single('imagen'), createProduct);   // ← multer inyecta req.file
+
+// Ruta de extracción de datos (Múltiples imágenes)
+router.route('/extract-data')
+  .post(uploadImage.array('imagenes', 10), extractData); // ← multer inyecta req.files
 
 // Rutas específicas con ID: /api/products/:id
 router.route('/:id')

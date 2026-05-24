@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const { cloudinary } = require('../config/cloudinary');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // @desc    Obtener todos los productos (con búsqueda avanzada multicriterio)
 // @route   GET /api/products
@@ -161,10 +162,75 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const extractData = async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No se enviaron imágenes para analizar' });
+    }
+
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY.includes('tu_api_key_de_gemini')) {
+      return res.status(500).json({ message: 'Falta configurar GEMINI_API_KEY en el .env del backend' });
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    // Descargar las imágenes de Cloudinary en memoria para enviarlas a Gemini
+    const imageParts = [];
+    for (const file of req.files) {
+      const response = await fetch(file.path);
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      imageParts.push({
+        inlineData: {
+          data: base64,
+          mimeType: file.mimetype
+        }
+      });
+    }
+
+    const { origen, codigo_escaneado } = req.body;
+
+    const prompt = `Analiza estas imágenes de un producto. Extrae la información visible y devuélvela ÚNICAMENTE en formato JSON estricto (sin bloques de código markdown, solo el texto JSON).
+    ${codigo_escaneado ? `NOTA MUY IMPORTANTE: La cámara del celular ya escaneó el código de barras y es "${codigo_escaneado}". DEBES usar EXACTAMENTE ese valor para "codigo_interno".` : ''}
+    Estructura requerida:
+    {
+      "codigo_interno": "String (Si tienes la NOTA IMPORTANTE, usa ese número. Si no, usa el código de barras numérico si es visible, o el número de parte impreso. Si no hay, usa una palabra clave)",
+      "nombre": "String (Descripción del producto, ej. Mini Facial, Filtro, etc.)",
+      "marca": "String (Marca del producto)",
+      "ubicacion_fisica": "",
+      "precio_publico": "0",
+      "stock_actual": "1",
+      "stock_minimo": "1"
+    }`;
+
+    const result = await model.generateContent([prompt, ...imageParts]);
+    const responseText = result.response.text();
+
+    let extractedData = {};
+    try {
+      const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      extractedData = JSON.parse(cleanJson);
+    } catch (e) {
+      console.error('Error parseando JSON de Gemini:', responseText);
+      throw new Error('La IA devolvió un formato no válido');
+    }
+
+    res.status(200).json({ 
+      message: 'Datos extraídos correctamente con Inteligencia Artificial', 
+      extractedData,
+      files: req.files.map(f => f.path) 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en extracción de IA', error: error.message });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  extractData
 };
