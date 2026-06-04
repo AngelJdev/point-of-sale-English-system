@@ -34,8 +34,12 @@ const saleSchema = new mongoose.Schema({
   },
   metodo_pago: {
     type: String,
-    enum: ['Efectivo', 'Tarjeta'],
+    enum: ['Efectivo', 'Tarjeta', 'Crédito'],
     default: 'Efectivo'
+  },
+  cliente_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Client'
   },
   fecha: {
     type: Date,

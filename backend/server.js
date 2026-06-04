@@ -26,12 +26,18 @@ const productRoutes = require('./routes/productRoutes');
 const saleRoutes = require('./routes/saleRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cashRoutes = require('./routes/cashRoutes');
+const clientRoutes = require('./routes/clientRoutes');
+const supplierRoutes = require('./routes/supplierRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const { protect } = require('./middleware/authMiddleware');
 
 app.use('/api/products', protect, productRoutes);
 app.use('/api/sales', protect, saleRoutes);
 app.use('/api/users', userRoutes); // Solo login es público, las demás se protegerán adentro si es necesario
 app.use('/api/cash', protect, cashRoutes);
+app.use('/api/clients', protect, clientRoutes);
+app.use('/api/suppliers', protect, supplierRoutes);
+app.use('/api/settings', protect, settingsRoutes);
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)

@@ -8,6 +8,9 @@ import SalesHistory from './pages/SalesHistory';
 import Users from './pages/Users';
 import Login from './pages/Login';
 import CashRegister from './pages/CashRegister';
+import Clients from './pages/Clients';
+import Suppliers from './pages/Suppliers';
+import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -84,6 +87,21 @@ function App() {
             <Route path="/cash" element={
               <ProtectedRoute>
                 <Layout><CashRegister /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/clients" element={
+              <ProtectedRoute>
+                <Layout><Clients /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/suppliers" element={
+              <ProtectedRoute>
+                <Layout><Suppliers /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Layout><Settings /></Layout>
               </ProtectedRoute>
             } />
           </Routes>
