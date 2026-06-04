@@ -11,7 +11,7 @@ const loginLimiter = rateLimit({
 });
 
 // Rutas para la gestión de usuarios
-router.post('/login', loginUser);
+router.post('/login', loginLimiter, loginUser);
 router.route('/').post(protect, adminOnly, registerUser).get(protect, adminOnly, getUsers);
 router.route('/:id').delete(protect, adminOnly, deleteUser);
 

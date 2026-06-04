@@ -100,13 +100,11 @@ const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) =>
         data.append('removeImage', 'true');
       }
 
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-
       if (productToEdit) {
-        await axios.put(`/products/${productToEdit._id}`, data, config);
+        await axios.put(`/products/${productToEdit._id}`, data);
         toast.success('Producto actualizado');
       } else {
-        await axios.post('/products', data, config);
+        await axios.post('/products', data);
         toast.success('Producto agregado al inventario');
       }
 

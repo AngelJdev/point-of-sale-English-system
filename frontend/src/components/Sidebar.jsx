@@ -73,14 +73,20 @@ const Sidebar = () => {
           </>
         )}
         
-        <button className="sidebar-btn disabled">
+        <Link to="/clients" className={`sidebar-btn ${location.pathname === '/clients' ? 'active' : ''}`}>
           <Users size={32} />
           <span>Clientes</span>
-        </button>
-        <button className="sidebar-btn disabled">
+        </Link>
+        {isPrivileged && (
+          <Link to="/suppliers" className={`sidebar-btn ${location.pathname === '/suppliers' ? 'active' : ''}`}>
+            <PackageSearch size={32} />
+            <span>Proveedores</span>
+          </Link>
+        )}
+        <Link to="/settings" className={`sidebar-btn ${location.pathname === '/settings' ? 'active' : ''}`}>
           <Settings size={32} />
           <span>Config.</span>
-        </button>
+        </Link>
       </nav>
       <div className="sidebar-footer" style={{ marginTop: 'auto', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <button onClick={toggleTheme} className="sidebar-btn" style={{ width: '100%', marginBottom: '0.5rem' }}>

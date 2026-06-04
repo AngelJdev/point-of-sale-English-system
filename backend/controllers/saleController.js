@@ -9,7 +9,7 @@ const createSale = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { items, subtotal, impuestos, total, metodo_pago } = req.body;
+    const { items, subtotal, impuestos, total, metodo_pago, cliente_id } = req.body;
 
     if (!items || items.length === 0) {
       throw new Error('El carrito está vacío');
@@ -31,16 +31,31 @@ const createSale = async (req, res) => {
       await product.save({ session });
     }
 
+    let client = null;
+    if (metodo_pago === 'Crédito') {
+      if (!cliente_id) throw new Error('Cliente requerido para venta a crédito (Nota)');
+      const ClientModel = mongoose.model('Client');
+      client = await ClientModel.findById(cliente_id).session(session);
+      if (!client) throw new Error('Cliente no encontrado');
+    }
+
     // 2. Crear el registro de la venta (ticket)
     const newSale = new Sale({
       items,
       subtotal,
       impuestos,
       total,
-      metodo_pago
+      metodo_pago,
+      cliente_id
     });
 
     const savedSale = await newSale.save({ session });
+
+    // 3. Si fue a crédito, aumentar la deuda del cliente
+    if (client) {
+      client.balance += total;
+      await client.save({ session });
+    }
 
     // Si todo salió bien, guardamos cambios en la DB
     await session.commitTransaction();

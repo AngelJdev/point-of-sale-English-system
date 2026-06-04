@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from '../config/axios';
 import Swal from 'sweetalert2';
 import toast from 'react-hot-toast';
-import { Trash2, Plus, Minus, CreditCard, Banknote, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trash2, Plus, Minus, CreditCard, Banknote, ShoppingCart, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import ProductCard from '../components/ProductCard';
 import SuccessModal from '../components/SuccessModal';
@@ -22,8 +22,26 @@ const POS = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [montoRecibido, setMontoRecibido] = useState(0);
   const [cambio, setCambio] = useState(0);
+
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState('');
   
   const { cart, removeFromCart, updateQuantity, clearCart, subtotal, impuestos, total } = useCart();
+  const { currentUser } = useAuth();
+  const token = currentUser?.token;
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      if (!token) return;
+      try {
+        const response = await axios.get('/clients');
+        setClients(response.data);
+      } catch (error) {
+        console.error("Error al cargar clientes:", error);
+      }
+    };
+    fetchClients();
+  }, [token]);
 
   const fetchProducts = async (term = '', page = 1) => {
     setLoading(true);
@@ -157,9 +175,7 @@ const POS = () => {
       if (!montoIngresado) return;
       recibido = parseFloat(montoIngresado);
       cambioCalculado = recibido - total;
-    }
-
-    if (payMethod === 'Tarjeta') {
+    } else if (payMethod === 'Tarjeta') {
       const termResult = await Swal.fire({
         title: 'Terminal Bancaria',
         width: '400px',
@@ -181,6 +197,13 @@ const POS = () => {
         allowOutsideClick: false
       });
       if (!termResult.isConfirmed) return;
+    } else if (payMethod === 'Crédito') {
+      if (!selectedClient) {
+        Swal.fire('Error', 'Debe seleccionar un cliente para vender a crédito', 'error');
+        return;
+      }
+      recibido = total;
+      cambioCalculado = 0;
     }
 
     setIsProcessing(true);
@@ -197,7 +220,8 @@ const POS = () => {
         subtotal,
         impuestos,
         total,
-        metodo_pago: payMethod
+        metodo_pago: payMethod,
+        ...(selectedClient && { cliente_id: selectedClient })
       };
 
       // Mandar la venta a Node.js
@@ -219,6 +243,7 @@ const POS = () => {
     clearCart();
     setShowSuccessModal(false);
     setSearchTerm(''); // Limpia visualmente el buscador
+    setSelectedClient(''); // Limpia el cliente
     setCurrentPage(1);
     fetchProducts('', 1); // Fuerza la recarga ignorando el estado anterior para ver el stock actualizado
   };
@@ -299,6 +324,25 @@ const POS = () => {
             <span>${total.toFixed(2)}</span>
           </div>
           
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold' }}>Cliente (Opcional):</label>
+            <select 
+              value={selectedClient} 
+              onChange={(e) => {
+                setSelectedClient(e.target.value);
+                if (payMethod === 'Crédito' && !e.target.value) {
+                  setPayMethod('Efectivo');
+                }
+              }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #d1d5db', background: 'var(--bg-color)', color: 'var(--text-color)' }}
+            >
+              <option value="">-- Consumidor Final --</option>
+              {clients.map(c => (
+                <option key={c._id} value={c._id}>{c.nombre}</option>
+              ))}
+            </select>
+          </div>
+          
           <div className="payment-methods">
              <button 
                className={`pay-method-btn ${payMethod === 'Efectivo' ? 'active-pay' : ''}`}
@@ -313,6 +357,14 @@ const POS = () => {
                disabled={cart.length === 0 || isProcessing}
              >
                 <CreditCard size={24} /> Tarjeta
+             </button>
+             <button 
+               className={`pay-method-btn ${payMethod === 'Crédito' ? 'active-pay' : ''}`}
+               onClick={() => setPayMethod('Crédito')}
+               disabled={cart.length === 0 || isProcessing || !selectedClient}
+               style={{ gridColumn: 'span 2' }}
+             >
+                <Users size={24} /> Crédito
              </button>
           </div>
 
