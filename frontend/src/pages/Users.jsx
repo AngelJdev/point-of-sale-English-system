@@ -37,7 +37,7 @@ const Users = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/users/register', formData);
+      await axios.post('/users', formData);
       Swal.fire('¡Éxito!', 'Usuario creado exitosamente', 'success');
       setFormData({ nombre: '', usuario: '', password: '', role: 'staff' });
       fetchUsers();
