@@ -5,9 +5,9 @@ const { protect, adminOnly } = require('../middleware/authMiddleware');
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // Límite de 5 peticiones por IP
-  message: { message: 'Demasiados intentos de inicio de sesión, por favor intenta de nuevo en 15 minutos' }
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 10, // Límite de 10 peticiones por IP
+  message: { message: 'Demasiados intentos de inicio de sesión, por favor intenta de nuevo en 1 minuto' }
 });
 
 // Rutas para la gestión de usuarios
