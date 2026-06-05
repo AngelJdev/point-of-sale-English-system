@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Plus, Phone, MapPin, Edit, DollarSign, X, Check, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import axios from '../config/axios';
 import './Clients.css';
 import SearchBar from '../components/SearchBar';
 
@@ -30,13 +31,8 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data);
-      }
+      const { data } = await axios.get('/clients');
+      setClients(data);
     } catch (error) {
       console.error('Error fetching clients:', error);
       toast.error('Error al cargar clientes');
@@ -91,30 +87,21 @@ const Clients = () => {
     e.preventDefault();
     try {
       const url = currentClient 
-        ? `${import.meta.env.VITE_API_URL}/api/clients/${currentClient._id}`
-        : `${import.meta.env.VITE_API_URL}/api/clients`;
-      
-      const method = currentClient ? 'PUT' : 'POST';
+        ? `/clients/${currentClient._id}`
+        : `/clients`;
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        toast.success(currentClient ? 'Cliente actualizado' : 'Cliente creado');
-        setIsModalOpen(false);
-        fetchClients();
+      if (currentClient) {
+        await axios.put(url, formData);
+        toast.success('Cliente actualizado');
       } else {
-        const err = await response.json();
-        toast.error(err.message || 'Error al guardar cliente');
+        await axios.post(url, formData);
+        toast.success('Cliente creado');
       }
+      
+      setIsModalOpen(false);
+      fetchClients();
     } catch (error) {
-      toast.error('Error de red al guardar cliente');
+      toast.error(error.response?.data?.message || 'Error de red al guardar cliente');
     }
   };
 
@@ -126,30 +113,17 @@ const Clients = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients/${currentClient._id}/pay`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          amount: Number(paymentAmount),
-          description: paymentDesc
-        })
+      const { data } = await axios.post(`/clients/${currentClient._id}/pay`, {
+        amount: Number(paymentAmount),
+        description: paymentDesc
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success('Pago registrado correctamente');
-        setIsPaymentModalOpen(false);
-        fetchClients();
-        generateReceipt(currentClient, Number(paymentAmount), data.transaction);
-      } else {
-        const err = await response.json();
-        toast.error(err.message || 'Error al procesar pago');
-      }
+      toast.success('Pago registrado correctamente');
+      setIsPaymentModalOpen(false);
+      fetchClients();
+      generateReceipt(currentClient, Number(paymentAmount), data.transaction);
     } catch (error) {
-      toast.error('Error de red al procesar pago');
+      toast.error(error.response?.data?.message || 'Error de red al procesar pago');
     }
   };
 

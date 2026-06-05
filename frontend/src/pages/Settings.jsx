@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Save, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import axios from '../config/axios';
 import './Settings.css';
 
 const Settings = () => {
@@ -55,11 +56,8 @@ const Settings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
+        const { data } = await axios.get('/settings');
+        if (data) {
           setFormData({
             storeName: data.storeName || '',
             address: data.address || '',
@@ -88,23 +86,10 @@ const Settings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        toast.success('Configuración guardada correctamente');
-        // Aquí podrías actualizar un contexto global si el storeName se usa en el Navbar o Receipt
-      } else {
-        toast.error('Error al guardar configuración');
-      }
+      await axios.put('/settings', formData);
+      toast.success('Configuración guardada correctamente');
     } catch (error) {
-      toast.error('Error de red al guardar');
+      toast.error(error.response?.data?.message || 'Error al guardar configuración');
     }
   };
 

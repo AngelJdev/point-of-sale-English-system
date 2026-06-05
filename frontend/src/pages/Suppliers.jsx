@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PackageSearch, Plus, Phone, Building2, Edit, DollarSign, X, Check, Search, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import axios from '../config/axios';
 import './Suppliers.css';
 import './Clients.css'; // Reutilizamos estilos del modal de clientes
 
@@ -30,13 +31,8 @@ const Suppliers = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSuppliers(data);
-      }
+      const { data } = await axios.get('/suppliers');
+      setSuppliers(data);
     } catch (error) {
       console.error('Error fetching suppliers:', error);
       toast.error('Error al cargar proveedores');
@@ -86,30 +82,21 @@ const Suppliers = () => {
     e.preventDefault();
     try {
       const url = currentSupplier 
-        ? `${import.meta.env.VITE_API_URL}/api/suppliers/${currentSupplier._id}`
-        : `${import.meta.env.VITE_API_URL}/api/suppliers`;
-      
-      const method = currentSupplier ? 'PUT' : 'POST';
+        ? `/suppliers/${currentSupplier._id}`
+        : `/suppliers`;
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        toast.success(currentSupplier ? 'Proveedor actualizado' : 'Proveedor creado');
-        setIsModalOpen(false);
-        fetchSuppliers();
+      if (currentSupplier) {
+        await axios.put(url, formData);
+        toast.success('Proveedor actualizado');
       } else {
-        const err = await response.json();
-        toast.error(err.message || 'Error al guardar proveedor');
+        await axios.post(url, formData);
+        toast.success('Proveedor creado');
       }
+      
+      setIsModalOpen(false);
+      fetchSuppliers();
     } catch (error) {
-      toast.error('Error de red al guardar proveedor');
+      toast.error(error.response?.data?.message || 'Error de red al guardar proveedor');
     }
   };
 
@@ -122,29 +109,17 @@ const Suppliers = () => {
 
     try {
       const endpoint = type === 'invoice' ? 'invoice' : 'pay';
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers/${currentSupplier._id}/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          amount: Number(txAmount),
-          description: txDesc
-        })
+      await axios.post(`/suppliers/${currentSupplier._id}/${endpoint}`, {
+        amount: Number(txAmount),
+        description: txDesc
       });
 
-      if (response.ok) {
-        toast.success(type === 'invoice' ? 'Factura registrada' : 'Pago registrado');
-        setIsInvoiceModalOpen(false);
-        setIsPaymentModalOpen(false);
-        fetchSuppliers();
-      } else {
-        const err = await response.json();
-        toast.error(err.message || 'Error al procesar la operación');
-      }
+      toast.success(type === 'invoice' ? 'Factura registrada' : 'Pago registrado');
+      setIsInvoiceModalOpen(false);
+      setIsPaymentModalOpen(false);
+      fetchSuppliers();
     } catch (error) {
-      toast.error('Error de red');
+      toast.error(error.response?.data?.message || 'Error de red');
     }
   };
 
