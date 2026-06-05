@@ -7,6 +7,7 @@ import SearchBar from '../components/SearchBar';
 import ProductCard from '../components/ProductCard';
 import SuccessModal from '../components/SuccessModal';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './POS.css';
 
 const POS = () => {

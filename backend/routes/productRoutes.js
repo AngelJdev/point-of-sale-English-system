@@ -11,24 +11,37 @@ const {
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // ── Middleware de subida de imágenes (Cloudinary + Multer) ────────────────
-// uploadImage.single('imagen') procesa el campo "imagen" del FormData.
-// Si no se envía imagen, el middleware simplemente deja pasar la petición
-// y req.file quedará undefined (el controlador lo maneja).
 const { uploadImage } = require('../config/cloudinary');
+
+// Wrapper para capturar errores de multer (ej. falta de credenciales de Cloudinary en Vercel)
+const handleUploadError = (uploadMiddleware) => {
+  return (req, res, next) => {
+    uploadMiddleware(req, res, (err) => {
+      if (err) {
+        console.error('Error de subida de imagen:', err);
+        return res.status(500).json({ 
+          message: 'Error al subir la imagen. Verifica que CLOUDINARY_CLOUD_NAME y demás variables estén configuradas en Vercel.', 
+          error: err.message 
+        });
+      }
+      next();
+    });
+  };
+};
 
 // Rutas base: /api/products
 router.route('/')
   .get(getProducts)
-  .post(uploadImage.single('imagen'), createProduct);   // ← multer inyecta req.file
+  .post(handleUploadError(uploadImage.single('imagen')), createProduct);
 
 // Ruta de extracción de datos (Múltiples imágenes)
 router.route('/extract-data')
-  .post(uploadImage.array('imagenes', 10), extractData); // ← multer inyecta req.files
+  .post(handleUploadError(uploadImage.array('imagenes', 10)), extractData);
 
 // Rutas específicas con ID: /api/products/:id
 router.route('/:id')
   .get(getProductById)
-  .put(uploadImage.single('imagen'), updateProduct)     // ← multer inyecta req.file
+  .put(handleUploadError(uploadImage.single('imagen')), updateProduct)
   .delete(adminOnly, deleteProduct);
 
 module.exports = router;
