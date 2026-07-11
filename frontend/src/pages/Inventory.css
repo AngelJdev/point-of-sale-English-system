@@ -156,14 +156,28 @@
   text-align: center;
 }
 
-.stock-good {
+.stock-green {
   color: var(--success-color);
 }
 
-.stock-alert {
-  background-color: rgba(239, 68, 68, 0.15);
+.stock-yellow {
+  background-color: rgba(234, 179, 8, 0.15); /* Yellow 500 */
+  color: #ca8a04; /* Yellow 600 */
+  border: 2px solid #eab308;
+  border-radius: 8px;
+}
+
+.stock-red {
+  background-color: rgba(239, 68, 68, 0.15); /* Red 500 */
   color: var(--accent-color);
   border: 2px solid var(--accent-color);
+  border-radius: 8px;
+}
+
+.stock-purple {
+  background-color: rgba(168, 85, 247, 0.15); /* Purple 500 */
+  color: #9333ea; /* Purple 600 */
+  border: 2px solid #a855f7;
   border-radius: 8px;
 }
 

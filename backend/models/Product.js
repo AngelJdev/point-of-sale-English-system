@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
   },
   marca: {
     type: String,
+    required: true,
     trim: true
   },
   compatibilidad: [{
@@ -37,9 +38,19 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  precio_costo: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   precio_taller: {
     type: Number,
     min: 0
+  },
+  unidad_medida: {
+    type: String,
+    enum: ['pza', 'caja', 'jgo', 'paq', 'lts', 'mts', 'par'],
+    default: 'pza'
   },
   stock_actual: {
     type: Number,
