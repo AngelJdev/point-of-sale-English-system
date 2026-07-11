@@ -11,6 +11,7 @@ import CashRegister from './pages/CashRegister';
 import Clients from './pages/Clients';
 import Suppliers from './pages/Suppliers';
 import Settings from './pages/Settings';
+import Help from './pages/Help';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -102,6 +103,11 @@ function App() {
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Layout><Settings /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <Layout><Help /></Layout>
               </ProtectedRoute>
             } />
           </Routes>

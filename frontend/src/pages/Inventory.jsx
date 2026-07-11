@@ -93,7 +93,7 @@ const Inventory = () => {
             setProductToEdit(null);
             setIsModalOpen(true);
           }}>
-            <PlusCircle size={28} />
+            <PlusCircle size={32} />
             <span>Nuevo Producto</span>
           </button>
         </div>
@@ -127,7 +127,14 @@ const Inventory = () => {
                 </tr>
               ) : (
                 products.map((product) => {
-                  const isLowStock = product.stock_actual <= product.stock_minimo;
+                  let stockStatus = 'stock-green';
+                  if (product.stock_actual === 0) {
+                    stockStatus = 'stock-purple';
+                  } else if (product.stock_actual < product.stock_minimo) {
+                    stockStatus = 'stock-red';
+                  } else if (product.stock_actual === product.stock_minimo) {
+                    stockStatus = 'stock-yellow';
+                  }
                   
                   return (
                     <tr key={product._id}>
@@ -159,8 +166,8 @@ const Inventory = () => {
                       <td className="font-bold text-primary">${product.precio_publico?.toFixed(2)}</td>
                       
                       {/* Lógica condicional de Stock */}
-                      <td className={`stock-cell ${isLowStock ? 'stock-alert' : 'stock-good'}`}>
-                        {product.stock_actual}
+                      <td className={`stock-cell ${stockStatus}`}>
+                        {product.stock_actual} {product.unidad_medida || 'pza'}
                       </td>
 
                       <td style={{textAlign: 'center'}}>
@@ -173,14 +180,14 @@ const Inventory = () => {
                             }}
                             title="Editar producto"
                           >
-                            <Edit size={24} />
+                            <Edit size={28} />
                           </button>
                           <button 
                             className="delete-action-btn" 
                             onClick={() => handleDelete(product._id)}
                             title="Eliminar producto"
                           >
-                            <Trash2 size={24} />
+                            <Trash2 size={28} />
                           </button>
                         </div>
                       </td>

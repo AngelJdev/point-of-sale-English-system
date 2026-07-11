@@ -79,6 +79,8 @@ const createProduct = async (req, res) => {
     const product = new Product({
       ...req.body,
       precio_publico: Number(req.body.precio_publico),
+      precio_costo: Number(req.body.precio_costo || 0),
+      precio_taller: Number(req.body.precio_taller || 0),
       stock_actual:   Number(req.body.stock_actual),
       stock_minimo:   Number(req.body.stock_minimo || 0),
       imageUrl,
@@ -103,6 +105,8 @@ const updateProduct = async (req, res) => {
     const updateData = {
       ...req.body,
       precio_publico: Number(req.body.precio_publico),
+      precio_costo: Number(req.body.precio_costo || 0),
+      precio_taller: Number(req.body.precio_taller || 0),
       stock_actual:   Number(req.body.stock_actual),
       stock_minimo:   Number(req.body.stock_minimo || 0),
     };
