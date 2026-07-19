@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../config/axios';
 import Swal from 'sweetalert2';
-import { PlusCircle, Package, Edit, Trash2, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { PlusCircle, Package, Edit, Trash2, ChevronLeft, ChevronRight, AlertTriangle, TrendingUp } from 'lucide-react';
 import ProductFormModal from '../components/ProductFormModal';
+import BulkPriceUpdateModal from '../components/BulkPriceUpdateModal';
 import SearchBar from '../components/SearchBar';
 import './Inventory.css';
 
@@ -10,6 +11,7 @@ const Inventory = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkUpdateOpen, setIsBulkUpdateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [productToEdit, setProductToEdit] = useState(null);
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
@@ -88,6 +90,14 @@ const Inventory = () => {
           >
             <AlertTriangle size={20} />
             <span>Urgente Resurtir</span>
+          </button>
+          <button 
+            className="filter-btn" 
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: '#f0fdf4', color: '#16a34a', borderColor: '#bbf7d0' }}
+            onClick={() => setIsBulkUpdateOpen(true)}
+          >
+            <TrendingUp size={20} />
+            <span style={{ fontWeight: 600 }}>Actualizar Precios</span>
           </button>
           <button className="new-product-btn" onClick={() => {
             setProductToEdit(null);
@@ -228,6 +238,13 @@ const Inventory = () => {
         onClose={() => setIsModalOpen(false)} 
         onProductAdded={fetchProducts} 
         productToEdit={productToEdit}
+      />
+
+      {/* Modal para actualizar precios masivamente */}
+      <BulkPriceUpdateModal
+        isOpen={isBulkUpdateOpen}
+        onClose={() => setIsBulkUpdateOpen(false)}
+        onPricesUpdated={fetchProducts}
       />
     </div>
   );

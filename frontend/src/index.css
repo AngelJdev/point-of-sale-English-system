@@ -1,17 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
+  /* HSL Color Palette - Modern and Vibrant */
   --primary-color: #4f46e5;      /* Indigo 600 */
   --primary-hover: #4338ca;      /* Indigo 700 */
+  --primary-light: rgba(79, 70, 229, 0.1); 
+  
   --secondary-color: #f8fafc;    /* Slate 50 */
   --sidebar-bg: #0f172a;         /* Slate 900 */
-  --text-dark: #1e293b;          /* Slate 800 */
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  
+  --text-dark: #0f172a;          /* Slate 900 */
+  --text-muted: #64748b;         /* Slate 500 */
   --text-light: #ffffff;
+  
   --accent-color: #e11d48;       /* Rose 600 */
+  --accent-hover: #be123c;
+  
   --success-color: #10b981;      /* Emerald 500 */
-  --bg-color: var(--secondary-color);
+  --success-hover: #059669;
+  
+  --warning-color: #f59e0b;      /* Amber 500 */
+  
+  --border-color: #e2e8f0;       /* Slate 200 */
+  --bg-color: #f1f5f9;           /* Slate 100 */
   --card-bg: #ffffff;
+
+  /* Premium Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.3s ease;
 }
-
-
 
 * {
   box-sizing: border-box;
@@ -20,15 +50,85 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-dark);
-  font-size: 18px; 
-  line-height: 1.5;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animaciones de Burbuja */
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-dark);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5em;
+}
+
+p {
+  color: var(--text-muted);
+}
+
+/* Global Interactive Elements */
+button, a {
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all var(--transition-fast);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Global Inputs */
+input[type="text"], 
+input[type="number"], 
+input[type="password"], 
+input[type="email"], 
+select, 
+textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8; /* Slate 400 */
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animaciones de Burbuja (Keep existing) */
 .bubble-overlay {
   position: fixed;
   top: 0;
@@ -63,24 +163,3 @@ body {
   0% { clip-path: circle(150% at 50% 50%); }
   100% { clip-path: circle(0% at 50% 50%); display: none; }
 }
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-color);
-  font-weight: 700;
-}
-
-button, a {
-  cursor: pointer;
-  font-size: 1.1rem; /* Textos grandes en elementos interactivos */
-}
-
-/* Global input and select styles for theme adaptation */
-input, select, textarea {
-  color: var(--text-dark);
-}
-
-input::placeholder, textarea::placeholder {
-  color: var(--text-dark);
-  opacity: 0.5;
-}
-

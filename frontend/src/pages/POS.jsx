@@ -269,7 +269,7 @@ const POS = () => {
         <div className="panel-header">
           <h2 className="panel-title">Venta Actual</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '0.85rem', color: '#9ca3af', fontWeight: 'bold' }}>[F2] Buscar | [F4] Cobrar</span>
+            <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 'bold' }}>[F2] Buscar | [F4] Cobrar</span>
             <span className="cart-count">{cart.length} ítems</span>
           </div>
         </div>

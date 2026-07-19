@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { PackageSearch, User, KeyRound } from 'lucide-react';
+import { PackageSearch, User, KeyRound, ArrowRight, ShieldCheck } from 'lucide-react';
 import './Login.css';
 
 const Login = () => {
@@ -40,7 +40,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-wrapper">
       {isSuccess && (
         <div className="bubble-overlay bubble-expand" style={{ pointerEvents: 'all' }}>
           <div className="loader-container">
@@ -52,53 +52,85 @@ const Login = () => {
           </div>
         </div>
       )}
-      {/* Retract bubble when returning to login screen */}
       {!isSuccess && <div className="bubble-overlay bubble-retract"></div>}
-      <div className="login-card">
-        <div className="login-header">
-          <PackageSearch size={64} color="var(--primary-color)" />
-          <h1>Punto de Venta</h1>
-          <p>Sistema Integral de Refaccionaria</p>
+
+      <div className="login-split">
+        {/* Lado Izquierdo - Branding */}
+        <div className="login-branding">
+          <div className="branding-content">
+            <div className="logo-glow">
+              <PackageSearch size={80} color="white" />
+            </div>
+            <h1>Punto de Venta</h1>
+            <p className="branding-subtitle">Sistema Integral de Administración y Control para Refaccionarias.</p>
+            
+            <div className="branding-features">
+              <div className="feature-item">
+                <ShieldCheck size={24} color="#60a5fa" />
+                <span>Gestión Segura y Encriptada</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="branding-footer">
+            <p>&copy; 2026 Refaccionaria. Todos los derechos reservados.</p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-group">
-            <label>Usuario</label>
-            <div className="input-icon-wrapper">
-              <User size={24} className="input-icon" />
-              <input 
-                type="text" 
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                required
-                placeholder="Ingresa tu nombre de usuario"
-                autoFocus
-              />
+        {/* Lado Derecho - Formulario */}
+        <div className="login-form-container">
+          <div className="login-form-inner">
+            <div className="mobile-header">
+              <PackageSearch size={48} color="var(--primary-color)" />
+              <h2>Bienvenido de nuevo</h2>
             </div>
-          </div>
-
-          <div className="input-group">
-            <label>Contraseña</label>
-            <div className="input-icon-wrapper">
-              <KeyRound size={24} className="input-icon" />
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Ingresa tu contraseña"
-              />
+            
+            <div className="form-heading">
+              <h2>Iniciar Sesión</h2>
+              <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
             </div>
-          </div>
 
-          <button 
-            type="submit" 
-            className="login-btn"
-            disabled={loading}
-          >
-            {loading ? 'Cargando...' : 'Entrar al Sistema'}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="premium-login-form">
+              <div className="input-group">
+                <label>Nombre de Usuario</label>
+                <div className="input-icon-wrapper">
+                  <User size={22} className="input-icon" />
+                  <input 
+                    type="text" 
+                    value={usuario}
+                    onChange={(e) => setUsuario(e.target.value)}
+                    required
+                    placeholder="Ej. admin"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              <div className="input-group">
+                <label>Contraseña</label>
+                <div className="input-icon-wrapper">
+                  <KeyRound size={22} className="input-icon" />
+                  <input 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Tu contraseña segura"
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                className="premium-login-btn"
+                disabled={loading}
+              >
+                <span>{loading ? 'Autenticando...' : 'Acceder al Sistema'}</span>
+                {!loading && <ArrowRight size={20} className="btn-arrow" />}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
