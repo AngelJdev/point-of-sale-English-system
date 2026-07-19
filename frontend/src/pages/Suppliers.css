@@ -48,15 +48,15 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.85rem 1.75rem;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   border: none;
-  border-radius: 12px;
-  font-weight: 700;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
 }
 
 .add-supplier-btn:hover {
@@ -72,10 +72,10 @@
 
 .supplier-card {
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
   position: relative;
   border: 1px solid var(--border-color);
   display: flex;
@@ -89,8 +89,8 @@
 }
 
 .supplier-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
   border-color: var(--primary-color);
 }
 
@@ -265,6 +265,9 @@
   max-width: 650px;
   width: 90%;
   padding: 2.5rem;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  background: var(--card-bg);
 }
 
 .modal-content.supplier-modal h2 {
@@ -294,12 +297,12 @@
 
 .supplier-modal .form-group input {
   padding: 0.85rem;
-  border-radius: 8px;
-  border: 2px solid #94a3b8; /* Borde más grueso y oscuro para mayor visibilidad */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); 
   background: var(--bg-color);
-  color: var(--text-color);
+  color: var(--text-dark);
   font-size: 1.05rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 [data-theme='dark'] .supplier-modal .form-group input {
