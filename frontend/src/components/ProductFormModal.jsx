@@ -15,6 +15,8 @@ const EMPTY_FORM = {
   stock_actual: '',
   stock_minimo: '',
   unidad_medida: 'pza',
+  proveedor: '',
+  linea_producto: '',
 };
 
 const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) => {
@@ -24,7 +26,23 @@ const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) =>
   const [existingUrl, setExistingUrl] = useState('');     // URL guardada en Cloudinary (modo edición)
   const [removeImage, setRemoveImage] = useState(false);  // Señal de borrar imagen actual
   const [isSaving, setIsSaving] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
   const fileInputRef = useRef(null);
+
+  // ── Cargar proveedores ──────────────────────────────────────────────────
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const response = await axios.get('/suppliers');
+        setSuppliers(response.data);
+      } catch (error) {
+        console.error('Error fetching suppliers:', error);
+      }
+    };
+    if (isOpen) {
+      fetchSuppliers();
+    }
+  }, [isOpen]);
 
   // ── Resetea el formulario cada vez que se abre ──────────────────────────
   useEffect(() => {
@@ -42,6 +60,8 @@ const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) =>
         stock_actual: productToEdit.stock_actual || '',
         stock_minimo: productToEdit.stock_minimo || '',
         unidad_medida: productToEdit.unidad_medida || 'pza',
+        proveedor: productToEdit.proveedor || '',
+        linea_producto: productToEdit.linea_producto || '',
       });
       setExistingUrl(productToEdit.imageUrl || '');
     } else {
@@ -134,6 +154,10 @@ const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) =>
   // ── Imagen a mostrar en el preview ─────────────────────────────────────
   const previewSrc = imagePreview || (!removeImage ? existingUrl : '');
 
+  // ── Líneas disponibles del proveedor seleccionado ─────────────────────────
+  const selectedSupplierObj = suppliers.find(s => s._id === formData.proveedor);
+  const availableLines = selectedSupplierObj?.lineas_disponibles || [];
+
   return (
     <div className="modal-overlay">
       <div className="modal-form-content">
@@ -184,6 +208,44 @@ const ProductFormModal = ({ isOpen, onClose, onProductAdded, productToEdit }) =>
                     value={formData.ubicacion_fisica} onChange={handleChange}
                     placeholder="Ej. Pasillo 3, Estante B"
                   />
+                </div>
+              </div>
+
+              {/* ── Fila 2.5: Proveedor + Línea ────────────────────────────── */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Proveedor</label>
+                  <select
+                    name="proveedor"
+                    value={formData.proveedor}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Seleccionar Proveedor --</option>
+                    {suppliers.map(sup => (
+                      <option key={sup._id} value={sup._id}>{sup.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Línea de Producto / Categoría</label>
+                  {availableLines.length > 0 ? (
+                    <select
+                      name="linea_producto"
+                      value={formData.linea_producto}
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Seleccionar Línea --</option>
+                      {availableLines.map((linea, idx) => (
+                        <option key={idx} value={linea}>{linea}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text" name="linea_producto"
+                      value={formData.linea_producto} onChange={handleChange}
+                      placeholder="Ej. Aceites, Frenos, Suspensión"
+                    />
+                  )}
                 </div>
               </div>
 

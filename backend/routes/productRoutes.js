@@ -6,7 +6,8 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  extractData
+  extractData,
+  bulkUpdatePrices
 } = require('../controllers/productController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -37,6 +38,10 @@ router.route('/')
 // Ruta de extracción de datos (Múltiples imágenes)
 router.route('/extract-data')
   .post(handleUploadError(uploadImage.array('imagenes', 10)), extractData);
+
+// Ruta de actualización masiva
+router.route('/bulk/update-prices')
+  .put(bulkUpdatePrices);
 
 // Rutas específicas con ID: /api/products/:id
 router.route('/:id')

@@ -21,7 +21,11 @@ const supplierSchema = new mongoose.Schema({
   balanceOwed: {
     type: Number,
     default: 0 // Cuánto dinero le debemos a este proveedor
-  }
+  },
+  lineas_disponibles: [{
+    type: String,
+    trim: true
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Supplier', supplierSchema);

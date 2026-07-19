@@ -230,11 +230,92 @@ const extractData = async (req, res) => {
   }
 };
 
+// @desc    Actualizar precios masivamente (por marca, proveedor, línea)
+// @route   PUT /api/products/bulk/update-prices
+// @access  Private
+const bulkUpdatePrices = async (req, res) => {
+  try {
+    const { 
+      proveedor, 
+      linea_producto, 
+      marca, 
+      increaseType, // 'percentage' | 'fixed'
+      increaseValue,
+      applyTo // array of strings: ['publico', 'costo', 'taller'] o por defecto los tres
+    } = req.body;
+
+    // Construir el filtro de búsqueda dinámico
+    const filter = {};
+    if (proveedor) filter.proveedor = proveedor;
+    if (linea_producto) filter.linea_producto = linea_producto;
+    if (marca) filter.marca = marca;
+
+    // Validar que haya al menos un filtro para evitar actualizar todo por error
+    if (Object.keys(filter).length === 0) {
+      return res.status(400).json({ message: 'Se requiere al menos un filtro (proveedor, línea o marca) para la actualización masiva.' });
+    }
+
+    const value = Number(increaseValue);
+    if (isNaN(value) || value === 0) {
+      return res.status(400).json({ message: 'El valor de aumento debe ser un número válido diferente de cero.' });
+    }
+
+    // Definir los campos de precio a afectar (por defecto los 3)
+    const fieldsToUpdate = applyTo && applyTo.length > 0 ? applyTo : ['publico', 'costo', 'taller'];
+    
+    // Obtener los productos que coinciden
+    const products = await Product.find(filter);
+    
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron productos con esos filtros.' });
+    }
+
+    let updateCount = 0;
+
+    // Iterar y guardar uno por uno para asegurar que corran validaciones (como min: 0) o usar updateMany
+    // Dado que necesitamos calcular el porcentaje sobre el valor actual de cada uno, updateMany con aggregation pipeline es la mejor opción en Mongoose > 4.2
+    
+    const updatePipeline = {};
+    
+    if (increaseType === 'percentage') {
+      const multiplier = 1 + (value / 100);
+      
+      const setFields = {};
+      if (fieldsToUpdate.includes('publico')) setFields.precio_publico = { $multiply: ["$precio_publico", multiplier] };
+      if (fieldsToUpdate.includes('costo')) setFields.precio_costo = { $multiply: ["$precio_costo", multiplier] };
+      if (fieldsToUpdate.includes('taller')) setFields.precio_taller = { $multiply: ["$precio_taller", multiplier] };
+      
+      await Product.updateMany(filter, [ { $set: setFields } ]);
+    } else if (increaseType === 'fixed') {
+      // Para cantidad fija, el aggregation pipeline es usar $add
+      const setFields = {};
+      if (fieldsToUpdate.includes('publico')) setFields.precio_publico = { $add: ["$precio_publico", value] };
+      if (fieldsToUpdate.includes('costo')) setFields.precio_costo = { $add: ["$precio_costo", value] };
+      if (fieldsToUpdate.includes('taller')) setFields.precio_taller = { $add: ["$precio_taller", value] };
+      
+      // Mongoose asegura min:0 si validamos al guardar, pero updateMany no dispara validadores fácilmente en aggregation,
+      // así que usamos $max para evitar precios negativos si value es negativo
+      for (const key in setFields) {
+        setFields[key] = { $max: [0, setFields[key]] };
+      }
+
+      await Product.updateMany(filter, [ { $set: setFields } ]);
+    } else {
+      return res.status(400).json({ message: 'Tipo de aumento inválido. Use "percentage" o "fixed".' });
+    }
+
+    res.json({ message: `Se actualizaron los precios de ${products.length} productos correctamente.` });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar precios masivamente', error: error.message });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
-  extractData
+  extractData,
+  bulkUpdatePrices
 };

@@ -2,41 +2,57 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
-// Arreglos de datos para combinaciones aleatorias y realistas
-const marcas = ['TRW', 'Bosch', 'Brembo', 'Wagner', 'ACDelco', 'Motorcraft', 'NGK', 'Denso', 'Castrol', 'Mobil', 'Valvoline', 'Fram', 'Gonher', 'LTH'];
-const categorias = ['Balatas', 'Bujías', 'Filtro de Aceite', 'Filtro de Aire', 'Aceite Sintético', 'Aceite Mineral', 'Batería', 'Amortiguador', 'Bomba de Agua', 'Banda de Tiempo', 'Anticongelante', 'Líquido de Frenos'];
-const ubicaciones = ['Pasillo 1', 'Pasillo 2', 'Pasillo 3', 'Pasillo 4', 'Estante A', 'Estante B', 'Estante C', 'Mostrador', 'Almacén Trasero'];
-const coches = ['Nissan Versa', 'Chevrolet Aveo', 'VW Jetta', 'Toyota Hilux', 'Honda CR-V', 'Kia Rio', 'Ford Figo'];
+const Supplier = require('./models/Supplier');
 
-const generarProducto = (index) => {
-  const categoria = categorias[Math.floor(Math.random() * categorias.length)];
+// Datos de prueba para proveedores
+const proveedoresData = [
+  {
+    nombre: 'AutoPartes de la Sierra',
+    empresa: 'Grupo Sierra S.A.',
+    telefono: '5512345678',
+    contacto: 'Juan Pérez',
+    lineas_disponibles: ['Aceites', 'Filtros', 'Bujías']
+  },
+  {
+    nombre: 'Frenos y Clutch El Compadre',
+    empresa: 'Frenos Compadre S.A. de C.V.',
+    telefono: '3398765432',
+    contacto: 'María López',
+    lineas_disponibles: ['Balatas', 'Líquido de Frenos', 'Clutch']
+  },
+  {
+    nombre: 'Suspensiones Rápidas',
+    empresa: 'Suspensur',
+    telefono: '8111222333',
+    contacto: 'Roberto Gómez',
+    lineas_disponibles: ['Amortiguadores', 'Bujes', 'Terminales']
+  }
+];
+
+const marcas = ['TRW', 'Bosch', 'Brembo', 'Wagner', 'ACDelco', 'Motorcraft', 'NGK', 'Castrol', 'Mobil'];
+const coches = ['Nissan Versa', 'Chevrolet Aveo', 'VW Jetta', 'Toyota Hilux', 'Honda CR-V'];
+
+const generarProducto = (index, proveedor) => {
+  // Elegir una línea al azar de las que vende este proveedor
+  const linea = proveedor.lineas_disponibles[Math.floor(Math.random() * proveedor.lineas_disponibles.length)];
   const marca = marcas[Math.floor(Math.random() * marcas.length)];
-  const ubicacion = ubicaciones[Math.floor(Math.random() * ubicaciones.length)];
   const coche = coches[Math.floor(Math.random() * coches.length)];
   
-  // Precio aleatorio entre $50 y $3500
-  const precio = Math.floor(Math.random() * (3500 - 50 + 1) + 50);
-  
-  // Stock actual aleatorio entre 0 y 30 (para que algunos salgan en Urgente Resurtir)
-  const stock_actual = Math.floor(Math.random() * 31);
-  // Stock mínimo aleatorio entre 2 y 10
-  const stock_minimo = Math.floor(Math.random() * 9) + 2; 
+  const precio = Math.floor(Math.random() * (2000 - 100 + 1) + 100);
   
   return {
-    codigo_interno: `REF-${10000 + index}`, // Ej. REF-10001
-    numero_parte_oem: `OEM-${Math.floor(Math.random() * 900000) + 100000}`,
-    nombre: `${categoria} ${marca} para ${coche}`,
-    descripcion: `Producto automotriz de alta calidad. Categoría: ${categoria}.`,
+    codigo_interno: `REF-${1000 + index}`,
+    nombre: `${linea} ${marca} para ${coche}`,
+    descripcion: `Excelente calidad.`,
     marca: marca,
-    precio_costo: precio * 0.6, // Costo simulado del 60%
+    precio_costo: precio * 0.6,
     precio_publico: precio,
-    precio_mayoreo: precio * 0.85,
-    stock_actual: stock_actual,
-    stock_minimo: stock_minimo,
-    ubicacion_fisica: ubicacion,
-    unidad_medida: 'pieza',
-    compatibilidad: coche,
-    imageUrl: ''
+    precio_taller: precio * 0.85,
+    stock_actual: Math.floor(Math.random() * 20) + 1,
+    stock_minimo: 5,
+    unidad_medida: 'pza',
+    proveedor: proveedor._id,
+    linea_producto: linea
   };
 };
 
@@ -46,19 +62,26 @@ const seedDatabase = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Conectado exitosamente.');
 
-    console.log('🗑️ Limpiando el catálogo anterior de productos...');
+    console.log('🗑️ Limpiando la BD (Productos y Proveedores)...');
     await Product.deleteMany();
+    await Supplier.deleteMany();
 
-    console.log('🌱 Generando 1000 productos aleatorios de refaccionaria...');
+    console.log('🌱 Creando Proveedores de prueba...');
+    const insertedSuppliers = await Supplier.insertMany(proveedoresData);
+
+    console.log('🌱 Generando 60 productos de prueba (20 por proveedor)...');
     const productos = [];
-    for (let i = 1; i <= 1000; i++) {
-      productos.push(generarProducto(i));
+    let pIndex = 1;
+
+    for (const proveedor of insertedSuppliers) {
+      for (let i = 0; i < 20; i++) {
+        productos.push(generarProducto(pIndex++, proveedor));
+      }
     }
 
-    console.log('💾 Insertando 1000 productos en la base de datos (esto tomará unos segundos)...');
     await Product.insertMany(productos);
     
-    console.log('🎉 ¡Listo! La base de datos ha sido poblada masivamente.');
+    console.log('🎉 ¡Listo! La base de datos ha sido poblada con Proveedores y Líneas de Producto.');
     process.exit();
   } catch (error) {
     console.error('❌ Error crítico durante el seedeo:', error);

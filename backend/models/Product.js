@@ -67,6 +67,14 @@ const productSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  proveedor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Supplier'
+  },
+  linea_producto: {
+    type: String,
+    trim: true
+  },
   imageUrl: {
     type: String,
     trim: true
