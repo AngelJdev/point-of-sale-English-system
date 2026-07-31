@@ -26,7 +26,7 @@ const Sidebar = () => {
       {isExiting && <div className="bubble-overlay bubble-expand"></div>}
       <aside className="sidebar">
       <div className="sidebar-brand">
-        <h2>Punto de Venta</h2>
+        <h2>Refaccionaria Reyna</h2>
       </div>
       <nav className="sidebar-nav">
         <Link to="/" className={`sidebar-btn ${location.pathname === '/' ? 'active' : ''}`}>

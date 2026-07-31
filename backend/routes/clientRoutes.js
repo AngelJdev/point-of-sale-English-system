@@ -7,7 +7,8 @@ const {
   updateClient,
   deleteClient,
   payBalance,
-  getClientTransactions
+  getClientTransactions,
+  getClientHistory
 } = require('../controllers/clientController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -22,5 +23,6 @@ router.route('/:id')
 
 router.post('/:id/pay', protect, payBalance);
 router.get('/:id/transactions', protect, getClientTransactions);
+router.get('/:id/history', protect, getClientHistory);
 
 module.exports = router;

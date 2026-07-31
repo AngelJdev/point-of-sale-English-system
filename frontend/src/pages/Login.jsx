@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { PackageSearch, User, KeyRound, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Wrench, User, KeyRound, ArrowRight, ShieldCheck } from 'lucide-react';
 import './Login.css';
 
 const Login = () => {
@@ -44,7 +44,7 @@ const Login = () => {
       {isSuccess && (
         <div className="bubble-overlay bubble-expand" style={{ pointerEvents: 'all' }}>
           <div className="loader-container">
-            <PackageSearch size={100} className="floating-logo" />
+            <Wrench size={100} className="floating-logo" />
             <h2>Iniciando sistema...</h2>
             <div className="progress-bar">
               <div className="progress-fill"></div>
@@ -59,9 +59,9 @@ const Login = () => {
         <div className="login-branding">
           <div className="branding-content">
             <div className="logo-glow">
-              <PackageSearch size={80} color="white" />
+              <Wrench size={80} color="white" />
             </div>
-            <h1>Punto de Venta</h1>
+            <h1>Refaccionaria Reyna</h1>
             <p className="branding-subtitle">Sistema Integral de Administración y Control para Refaccionarias.</p>
             
             <div className="branding-features">
@@ -73,7 +73,7 @@ const Login = () => {
           </div>
           
           <div className="branding-footer">
-            <p>&copy; 2026 Refaccionaria. Todos los derechos reservados.</p>
+            <p>&copy; 2026 NEXUS SOLUTIONS. Todos los derechos reservados.</p>
           </div>
         </div>
 
@@ -81,7 +81,7 @@ const Login = () => {
         <div className="login-form-container">
           <div className="login-form-inner">
             <div className="mobile-header">
-              <PackageSearch size={48} color="var(--primary-color)" />
+              <Wrench size={48} color="var(--primary-color)" />
               <h2>Bienvenido de nuevo</h2>
             </div>
             

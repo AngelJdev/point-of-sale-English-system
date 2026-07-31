@@ -1,13 +1,29 @@
 import React from 'react';
+import { Settings, Wrench, Droplet, CarFront } from 'lucide-react';
 import './Receipt.css';
 
 const Receipt = ({ cart = [], payMethod = '', subtotal = 0, impuestos = 0, total = 0, montoRecibido = 0, cambio = 0, date = new Date() }) => {
   return (
     <div id="printable-receipt" className="receipt-container">
       <div className="receipt-header">
-        <h2 className="store-name">PUNTO DE VENTA</h2>
-        <p className="store-desc">Sistema Integral de Refaccionaria</p>
-        <p className="store-rfc">RFC: XEXX010101000</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+            <Settings size={20} />
+            <Droplet size={20} />
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <h2 className="store-name" style={{ fontSize: '15px', margin: '0', fontWeight: 'bold' }}>HULES, BANDAS Y ACEITES</h2>
+            <h1 className="store-name" style={{ fontSize: '28px', margin: '5px 0', letterSpacing: '2px', fontWeight: '900' }}>"REYNA"</h1>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+            <Wrench size={20} />
+            <CarFront size={20} />
+          </div>
+        </div>
+        <p className="store-desc">Reyna Meléndez Jilote</p>
+        <p className="store-rfc">RFC: MEJR590510NU6</p>
+        <p className="store-address">Adolfo Lopez Mateos No. 106, Col. San Isidro<br/>Xicotepec de Juarez, Pue. C.P. 73080</p>
+        <p className="store-phone">Tel. 764 764 90 99</p>
         <div className="divider"></div>
         <p className="receipt-title">COMPROBANTE DE VENTA</p>
         <p className="receipt-date">{date.toLocaleDateString()} - {date.toLocaleTimeString()}</p>
@@ -58,8 +74,9 @@ const Receipt = ({ cart = [], payMethod = '', subtotal = 0, impuestos = 0, total
         <p className="policy">Revise sus piezas al momento de la entrega.</p>
         <p className="policy bold">No hay devoluciones en partes eléctricas.</p>
         <p className="greeting">¡GRACIAS POR SU COMPRA!</p>
+        <p className="rights-reserved" style={{ fontSize: '10px', marginTop: '10px' }}>Derechos reservados para NEXUS SOLUTIONS</p>
         <div className="barcode-placeholder">
-           ||||||||||||||||||||||||||||
+          ||||||||||||||||||||||||||||
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <h1>Punto de Venta</h1>
+        <h1>Refaccionaria Reyna</h1>
       </div>
       <div className="navbar-links">
         <Link 
@@ -17,7 +17,7 @@ const Navbar = () => {
           className={`nav-btn ${location.pathname === '/' ? 'active' : ''}`}
         >
           <ShoppingCart size={28} />
-          <span>Punto de Venta</span>
+          <span>Ventas</span>
         </Link>
         <Link 
           to="/inventory" 

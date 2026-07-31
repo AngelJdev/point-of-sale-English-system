@@ -13,6 +13,8 @@ import Suppliers from './pages/Suppliers';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import Maintenance from './pages/Maintenance';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { Toaster } from 'react-hot-toast';
@@ -54,10 +56,12 @@ function App() {
             },
           }}
         />
-        <Router>
-          <Routes>
-            {/* Ruta Pública */}
-            <Route path="/login" element={<Login />} />
+        <ErrorBoundary>
+          <Router>
+            <Routes>
+              {/* Rutas Públicas */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/maintenance" element={<Maintenance />} />
 
             {/* Rutas Protegidas envueltas en el Layout */}
             <Route path="/" element={
@@ -110,8 +114,9 @@ function App() {
                 <Layout><Help /></Layout>
               </ProtectedRoute>
             } />
-          </Routes>
-        </Router>
+            </Routes>
+          </Router>
+        </ErrorBoundary>
       </CartProvider>
     </AuthProvider>
   );

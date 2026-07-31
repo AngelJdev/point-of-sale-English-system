@@ -7,6 +7,7 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [priceType, setPriceType] = useState('precio_publico');
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -53,7 +54,10 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
-  const total = cart.reduce((acc, item) => acc + (item.precio_publico * item.quantity), 0);
+  const total = cart.reduce((acc, item) => {
+    const itemPrice = item[priceType] || item.precio_publico || 0;
+    return acc + (itemPrice * item.quantity);
+  }, 0);
   const subtotal = total / 1.16; // El IVA ya está incluido, así que lo extraemos
   const impuestos = total - subtotal; // 16% desglosado
 
@@ -66,7 +70,9 @@ export const CartProvider = ({ children }) => {
       clearCart, 
       subtotal, 
       impuestos, 
-      total 
+      total,
+      priceType,
+      setPriceType
     }}>
       {children}
     </CartContext.Provider>

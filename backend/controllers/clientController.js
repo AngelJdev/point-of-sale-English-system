@@ -1,5 +1,6 @@
 const Client = require('../models/Client');
 const Transaction = require('../models/Transaction');
+const Sale = require('../models/Sale');
 
 const getClients = async (req, res) => {
   try {
@@ -110,6 +111,62 @@ const getClientTransactions = async (req, res) => {
   }
 };
 
+// Obtener historial de movimientos (cargos y abonos) de un cliente
+const getClientHistory = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+
+    // Obtener abonos
+    const transactions = await Transaction.find({ client: clientId })
+      .populate('user', 'nombre')
+      .lean();
+
+    // Obtener ventas a crédito (cargos)
+    const sales = await Sale.find({ 
+      cliente_id: clientId, 
+      metodo_pago: 'Crédito',
+      estado: 'completada'
+    }).populate('items.producto_id', 'nombre').lean();
+
+    // Formatear abonos
+    const formattedTransactions = transactions.map(t => ({
+      _id: t._id,
+      fecha: t.fecha,
+      tipo: 'Abono',
+      monto: t.monto,
+      descripcion: t.descripcion || 'Abono a cuenta',
+      usuario: t.user?.nombre || 'N/A'
+    }));
+
+    // Formatear cargos
+    const formattedSales = sales.map(s => {
+      // Crear descripcion con los productos
+      const productNames = s.items.map(item => {
+        const name = item.producto_id?.nombre || 'Producto Desconocido';
+        return `${item.cantidad}x ${name}`;
+      }).join(', ');
+
+      return {
+        _id: s._id,
+        fecha: s.fecha,
+        tipo: 'Cargo',
+        monto: s.total,
+        descripcion: `Venta: ${productNames}`.substring(0, 100), // Limitar longitud
+        usuario: 'Sistema' // Podría venir de la venta si se guardara el usuario
+      };
+    });
+
+    // Combinar y ordenar por fecha descendente (más reciente primero)
+    const history = [...formattedTransactions, ...formattedSales].sort((a, b) => {
+      return new Date(b.fecha) - new Date(a.fecha);
+    });
+
+    res.json(history);
+  } catch (error) {
+    console.error('Error fetching client history:', error);
+    res.status(500).json({ message: 'Error fetching client history', error: error.message });
+  }
+};
 
 module.exports = {
   getClients,
@@ -118,5 +175,6 @@ module.exports = {
   updateClient,
   deleteClient,
   payBalance,
-  getClientTransactions
+  getClientTransactions,
+  getClientHistory
 };
