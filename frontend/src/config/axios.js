@@ -17,4 +17,19 @@ instance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// Interceptor de respuesta para detectar caídas del servidor
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si hay error de red o el servidor responde 500 o más (caída/crash)
+    if (error.code === 'ERR_NETWORK' || (error.response && error.response.status >= 500)) {
+      // Redirigir a la pantalla de mantenimiento
+      if (window.location.pathname !== '/maintenance') {
+        window.location.href = '/maintenance';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default instance;

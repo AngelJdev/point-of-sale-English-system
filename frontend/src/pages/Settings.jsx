@@ -37,7 +37,7 @@ const Settings = () => {
     },
     {
       title: '👥 ¿Cómo dar Crédito a Clientes?',
-      content: 'Primero, ve a "Clientes" y registra uno nuevo. Marca la casilla "Habilitar Crédito" e ingresa el límite máximo que le permitirás deber. Al cobrar en el Punto de Venta, selecciona al cliente en el menú desplegable y usa el botón "Crédito". Para registrar abonos, ve a "Clientes" y haz clic en "Abonar".'
+      content: 'Primero, ve a "Clientes" y registra uno nuevo. Marca la casilla "Habilitar Crédito" e ingresa el límite máximo que le permitirás deber. Al cobrar en la sección de Ventas, selecciona al cliente en el menú desplegable y usa el botón "Crédito". Para registrar abonos, ve a "Clientes" y haz clic en "Abonar".'
     },
     {
       title: '🚚 ¿Cómo llevar el control de Proveedores?',

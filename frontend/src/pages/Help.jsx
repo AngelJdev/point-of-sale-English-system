@@ -10,12 +10,12 @@ const Help = () => {
           <HelpCircle size={48} />
           <h1>Centro de Ayuda</h1>
         </div>
-        <p>Aprende paso a paso cómo utilizar cada sección de tu Punto de Venta.</p>
+        <p>Aprende paso a paso cómo utilizar cada sección de tu sistema.</p>
       </div>
 
       <div className="help-content">
         <section className="help-section">
-          <h2><ShoppingCart size={28} className="icon-bounce" /> 1. Venta (Punto de Venta)</h2>
+          <h2><ShoppingCart size={28} className="icon-bounce" /> 1. Ventas</h2>
           <div className="help-card">
             <h3>¿Para qué sirve?</h3>
             <p>Es la "caja registradora" de tu tienda. Aquí es donde le cobras a los clientes.</p>

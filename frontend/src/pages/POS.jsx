@@ -27,7 +27,7 @@ const POS = () => {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
   
-  const { cart, removeFromCart, updateQuantity, clearCart, subtotal, impuestos, total } = useCart();
+  const { cart, addToCart, removeFromCart, updateQuantity, clearCart, subtotal, impuestos, total, priceType, setPriceType } = useCart();
   const { currentUser } = useAuth();
   const token = currentUser?.token;
 
@@ -64,13 +64,37 @@ const POS = () => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
-  // Atajos de teclado (F2 para buscar, F4 para cobrar)
+  const handleSearchEnter = async () => {
+    if (!searchTerm.trim()) return;
+    try {
+      const response = await axios.get(`/products?search=${searchTerm.trim()}&limit=1`);
+      const products = response.data.products;
+      if (products && products.length > 0) {
+        const exactMatch = products.find(p => p.codigo_interno === searchTerm.trim()) || products[0];
+        
+        if (exactMatch.stock_actual > 0) {
+          addToCart(exactMatch);
+          toast.success(`Agregado: ${exactMatch.nombre}`);
+          setSearchTerm(''); // Limpiar para el siguiente escaneo
+        } else {
+          toast.error('Producto sin stock');
+        }
+      } else {
+        toast.error('Producto no encontrado');
+      }
+    } catch (error) {
+      console.error("Error al buscar producto por escaner:", error);
+    }
+  };
+
+  // Atajos de teclado y soporte para Escáner de Código de Barras
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'F2') {
         e.preventDefault();
         const searchInput = document.querySelector('.search-input');
         if (searchInput) searchInput.focus();
+        return;
       }
       if (e.key === 'F4') {
         e.preventDefault();
@@ -79,6 +103,22 @@ const POS = () => {
           handleCheckout();
         } else if (cart.length === 0) {
           toast.error('El carrito está vacío');
+        }
+        return;
+      }
+
+      // Si el usuario escribe algo (como un escáner) y no está en un input, enfocar buscador
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      const isInputFocused = ['input', 'textarea', 'select'].includes(activeTag) || document.activeElement.isContentEditable;
+      
+      if (!isInputFocused && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        // No enfocar si hay modales abiertos (SweetAlert o SuccessModal)
+        if (document.querySelector('.swal2-container') || showSuccessModal) return;
+        
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+          searchInput.focus();
+          // El navegador agregará automáticamente el carácter presionado al input enfocado
         }
       }
     };
@@ -216,7 +256,7 @@ const POS = () => {
         items: cart.map(item => ({
           producto_id: item._id,
           cantidad: item.quantity,
-          precio: item.precio_publico
+          precio: item[priceType] || item.precio_publico || 0
         })),
         subtotal,
         impuestos,
@@ -285,7 +325,7 @@ const POS = () => {
               <div key={item._id} className="cart-item">
                 <div className="cart-item-info">
                   <h4>{item.nombre}</h4>
-                  <span className="cart-item-price">${item.precio_publico.toFixed(2)} c/u</span>
+                  <span className="cart-item-price">${(item[priceType] || item.precio_publico || 0).toFixed(2)} c/u</span>
                 </div>
                 
                 <div className="cart-item-actions">
@@ -300,7 +340,7 @@ const POS = () => {
                   </div>
                   
                   <div className="cart-item-total-group">
-                    <span className="cart-item-total">${(item.precio_publico * item.quantity).toFixed(2)}</span>
+                    <span className="cart-item-total">${((item[priceType] || item.precio_publico || 0) * item.quantity).toFixed(2)}</span>
                     <button onClick={() => removeFromCart(item._id)} className="delete-btn" disabled={isProcessing}>
                       <Trash2 size={28} />
                     </button>
@@ -325,23 +365,35 @@ const POS = () => {
             <span>${total.toFixed(2)}</span>
           </div>
           
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.9rem', color: '#6b7280', fontWeight: 'bold' }}>Cliente (Opcional):</label>
-            <select 
-              value={selectedClient} 
-              onChange={(e) => {
-                setSelectedClient(e.target.value);
-                if (payMethod === 'Crédito' && !e.target.value) {
-                  setPayMethod('Efectivo');
-                }
-              }}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #d1d5db', background: 'var(--bg-color)', color: 'var(--text-color)' }}
-            >
-              <option value="">-- Consumidor Final --</option>
-              {clients.map(c => (
-                <option key={c._id} value={c._id}>{c.nombre}</option>
-              ))}
-            </select>
+          <div className="selectors-container" style={{ margin: '1rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            <div className="price-selector-group">
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tipo de Precio Aplicado:</label>
+              <select 
+                value={priceType} 
+                onChange={(e) => setPriceType(e.target.value)}
+                className="pos-custom-select"
+              >
+                <option value="precio_publico">💰 Precio Público</option>
+                <option value="precio_costo">📦 Precio de Compra</option>
+                <option value="precio_taller">⭐ Precio Especial</option>
+              </select>
+            </div>
+
+            {payMethod === 'Crédito' && (
+              <div className="client-selector-group" style={{ animation: 'fadeIn 0.3s ease' }}>
+                <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', color: '#ef4444', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente para Crédito (Obligatorio):</label>
+                <select 
+                  value={selectedClient} 
+                  onChange={(e) => setSelectedClient(e.target.value)}
+                  className="pos-custom-select client-credit-select"
+                >
+                  <option value="">-- Seleccionar Cliente --</option>
+                  {clients.map(c => (
+                    <option key={c._id} value={c._id}>{c.nombre}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
           
           <div className="payment-methods">
@@ -381,7 +433,7 @@ const POS = () => {
 
       {/* Columna Derecha: Catálogo */}
       <div className="pos-catalog-panel">
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onEnter={handleSearchEnter} />
         
         {loading && <p className="loading-text">Buscando...</p>}
 

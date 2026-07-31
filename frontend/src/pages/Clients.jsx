@@ -10,7 +10,9 @@ const Clients = () => {
   const [clients, setClients] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
+  const [clientHistory, setClientHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   
   // Payment Form State
@@ -81,6 +83,19 @@ const Clients = () => {
     setPaymentAmount('');
     setPaymentDesc('Abono a cuenta');
     setIsPaymentModalOpen(true);
+  };
+
+  const openHistoryModal = async (client) => {
+    setCurrentClient(client);
+    setClientHistory([]);
+    setIsHistoryModalOpen(true);
+    try {
+      const { data } = await axios.get(`/clients/${client._id}/history`);
+      setClientHistory(data);
+    } catch (error) {
+      console.error('Error fetching client history:', error);
+      toast.error('Error al cargar el historial del cliente');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -209,12 +224,15 @@ const Clients = () => {
               </span>
             </div>
 
-            <div className="client-actions">
-              <button className="btn-edit" onClick={() => openModal(client)}>
+            <div className="client-actions" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+              <button className="btn-edit" onClick={() => openModal(client)} style={{ flex: 1 }}>
                 <Edit size={16} /> Editar
               </button>
-              <button className="btn-pay" onClick={() => openPaymentModal(client)} disabled={client.balance <= 0}>
+              <button className="btn-pay" onClick={() => openPaymentModal(client)} disabled={client.balance <= 0} style={{ flex: 1 }}>
                 <DollarSign size={16} /> Abonar
+              </button>
+              <button className="btn-history" onClick={() => openHistoryModal(client)} style={{ flex: '1 1 100%', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                 Historial
               </button>
             </div>
           </div>
@@ -224,7 +242,7 @@ const Clients = () => {
       {/* Modal Crear/Editar */}
       {isModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-form-content">
+          <div className="modal-form-content client-form-modal">
             <div className="modal-header">
               <h2>{currentClient ? 'Editar Cliente' : 'Nuevo Cliente'}</h2>
               <button className="close-btn" onClick={() => setIsModalOpen(false)}><X size={32} /></button>
@@ -289,12 +307,97 @@ const Clients = () => {
               </div>
 
               <div className="form-actions">
-                <div className="form-buttons">
+                <div className="form-buttons" style={{ gap: '1rem' }}>
                   <button type="button" className="btn-cancelar" onClick={() => setIsPaymentModalOpen(false)}>Cancelar</button>
+                  <button 
+                    type="button" 
+                    className="btn-cancelar" 
+                    style={{ backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db' }}
+                    onClick={() => {
+                      setIsPaymentModalOpen(false);
+                      openHistoryModal(currentClient);
+                    }}
+                  >
+                    Volver a Historial
+                  </button>
                   <button type="submit" className="btn-guardar" style={{ backgroundColor: '#f59e0b', color: 'white' }}><DollarSign size={20} style={{ marginRight: 5 }}/> Procesar Pago</button>
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Historial */}
+      {isHistoryModalOpen && currentClient && (
+        <div className="modal-overlay">
+          <div className="modal-form-content history-modal-content">
+            <div className="modal-header">
+              <h2>Historial de Cuenta: {currentClient.nombre}</h2>
+              <button className="close-btn" onClick={() => setIsHistoryModalOpen(false)}><X size={32} /></button>
+            </div>
+            
+            <div className="history-balance-card">
+               <span className="balance-label">Saldo Actual</span>
+               <span className={`balance-value ${currentClient.balance > 0 ? 'debt' : 'clear'}`}>
+                 ${currentClient.balance.toFixed(2)}
+               </span>
+            </div>
+            
+            <div className="table-responsive history-table-container">
+              <table className="history-table">
+                <thead>
+                  <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th className="align-right">Monto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="empty-history">
+                        No hay movimientos registrados para este cliente.
+                      </td>
+                    </tr>
+                  ) : (
+                    clientHistory.map((mov, index) => (
+                      <tr key={mov._id || index}>
+                        <td>{new Date(mov.fecha).toLocaleString()}</td>
+                        <td>
+                          <span className={`history-badge ${mov.tipo === 'Cargo' ? 'badge-cargo' : 'badge-abono'}`}>
+                            {mov.tipo}
+                          </span>
+                        </td>
+                        <td>{mov.descripcion}</td>
+                        <td className={`align-right fw-bold ${mov.tipo === 'Cargo' ? 'text-danger' : 'text-success'}`}>
+                          {mov.tipo === 'Cargo' ? '+' : '-'}${mov.monto.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="form-actions" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+              <div className="form-buttons" style={{ justifyContent: 'flex-end', gap: '1rem' }}>
+                <button type="button" className="btn-cancelar" onClick={() => setIsHistoryModalOpen(false)}>Cerrar</button>
+                <button 
+                  type="button" 
+                  className="btn-pay" 
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem 1rem', borderRadius: '4px', backgroundColor: currentClient.balance > 0 ? '#10b981' : '#d1d5db', color: 'white', border: 'none', cursor: currentClient.balance > 0 ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}
+                  disabled={currentClient.balance <= 0}
+                  onClick={() => {
+                    setIsHistoryModalOpen(false);
+                    openPaymentModal(currentClient);
+                  }}
+                >
+                  <DollarSign size={20} style={{ marginRight: '5px' }} /> Abonar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
